@@ -120,10 +120,8 @@ func update_element(m map[string]Stat, line string) (err error) {
 
 func read_line(reader *bufio.Reader, c chan string) (num float64, element string, err error) {
 
-	var line string
-
 	for {
-		line, err = reader.ReadString('\n')
+		line, err := reader.ReadString('\n')
 
 		if err != nil {
 			break
