@@ -1,0 +1,39 @@
+=pod
+
+=head1 NAME
+
+topstat - simple statics for stdin with top-like interface
+
+=head1 SYNOPSIS
+
+  printf "12 foo\n13 bar\n" | topstat
+
+=head1 DESCRIPTION
+
+topstat reads lines from stdin, generates statitics from these lines and
+present them in a top-like interface. Every line must contain a number
+as first element, the rest of the line is interpreted as identifier for
+that line. Number and identifier are split by consecutive whitespace.
+
+=head1 INSTALLATION
+
+  go build -o topstat *.go
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright 2014 Mario Domgoergen L<E<lt>mario@domgoergen.comE<gt>>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+=cut
