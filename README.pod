@@ -17,7 +17,17 @@ that line. Number and identifier are split by consecutive whitespace.
 
 =head1 INSTALLATION
 
-  go build -o topstat *.go
+First get the source code,
+
+  go get github.com/mdom/topstat
+
+then fetch the dependencies,
+
+  go get
+
+and build the program.
+
+  go build
 
 =head1 COPYRIGHT AND LICENSE
 
