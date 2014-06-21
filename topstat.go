@@ -16,6 +16,10 @@ import (
 )
 
 func main() {
+
+	log.SetPrefix("topstat: ")
+	log.SetFlags(0)
+
 	if terminal.IsTerminal(syscall.Stdin) {
 		log.Fatalln("stdin can't be connected to a terminal")
 	}
