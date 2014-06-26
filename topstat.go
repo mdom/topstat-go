@@ -55,7 +55,7 @@ loop:
 	for {
 		select {
 		case <-tick:
-			update_screen(pipe_open, statsort(sort_order, m))
+			update_screen(pipe_open, opts.Metrics, statsort(sort_order, m))
 		case event := <-key_pressed:
 			switch event.Type {
 			case termbox.EventKey:
@@ -77,10 +77,10 @@ loop:
 				}
 				switch event.Ch {
 				case 'l', 'a', 's', 'n', '<', '>':
-					update_screen(pipe_open, statsort(sort_order, m))
+					update_screen(pipe_open, opts.Metrics, statsort(sort_order, m))
 				}
 			case termbox.EventResize:
-				update_screen(pipe_open, statsort(sort_order, m))
+				update_screen(pipe_open, opts.Metrics, statsort(sort_order, m))
 			}
 		case line, line_ok := <-new_line:
 			if line_ok {
