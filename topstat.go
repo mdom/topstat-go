@@ -5,6 +5,7 @@ import (
 	"code.google.com/p/go.crypto/ssh/terminal"
 	"errors"
 	"fmt"
+	"github.com/jessevdk/go-flags"
 	"github.com/nsf/termbox-go"
 	"log"
 	"os"
@@ -15,10 +16,19 @@ import (
 	"time"
 )
 
+type Options struct {
+	Metrics []string `short:"m" long:"metric" description:"Metrics to display default:sum default:average" default:"sum" default:"average" value-name:"METRIC"`
+}
+
 func main() {
 
 	log.SetPrefix("topstat: ")
 	log.SetFlags(0)
+
+	var opts Options
+	if _, err := flags.NewParser(&opts, flags.HelpFlag).Parse(); err != nil {
+		log.Fatalln(err)
+	}
 
 	if terminal.IsTerminal(syscall.Stdin) {
 		log.Fatalln("stdin can't be connected to a terminal")
