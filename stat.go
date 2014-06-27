@@ -67,3 +67,25 @@ func statsort(sort_order string, m map[string]Stat) Stats {
 	}
 	return s
 }
+
+func elementsort(sort_order string, m map[string]Stat) []string {
+	stats := statsort(sort_order, m )
+	var keys []string
+	for _, stat := range stats {
+		keys = append(keys, stat.element)
+	}
+	return keys
+}
+
+func purge_stats(purge_method string, keep int, m map[string]Stat) (purged bool) {
+	keys := elementsort(purge_method, m)
+	if len(keys) > keep {
+		keys = keys[keep:len(keys)]
+		for _, key := range keys {
+			delete(m,key)
+		}
+		return true
+	}
+
+	return false
+}

@@ -19,6 +19,8 @@ import (
 type Options struct {
 	Metrics []string `short:"m" long:"metric" description:"Metrics to display" default:"sum" default:"average" value-name:"METRIC"`
 	Interval int `short:"i" long:"interval" description:"delay between screen updates" default:"2" value-name:"INTERVAL"`
+	Purge string `short:"p" long:"purge" description:"purge strategy" default:"average" value-name:"STRATEGY"`
+	Keep int `short:"k" long:"keep" description:"keep NUM elements" default:"1000" value-name:"NUM"`
 }
 
 func main() {
@@ -56,6 +58,7 @@ loop:
 	for {
 		select {
 		case <-tick:
+			purge_stats(opts.Purge,opts.Keep, m)
 			update_screen(pipe_open, opts.Metrics, statsort(sort_order, m))
 		case event := <-key_pressed:
 			switch event.Type {
