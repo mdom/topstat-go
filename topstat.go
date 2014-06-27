@@ -18,6 +18,7 @@ import (
 
 type Options struct {
 	Metrics []string `short:"m" long:"metric" description:"Metrics to display" default:"sum" default:"average" value-name:"METRIC"`
+	Interval int `short:"i" long:"interval" description:"delay between screen updates" default:"2" value-name:"INTERVAL"`
 }
 
 func main() {
@@ -46,7 +47,7 @@ func main() {
 
 	new_line := make(chan string)
 	key_pressed := make(chan termbox.Event)
-	tick := time.Tick(2 * time.Second)
+	tick := time.Tick(time.Duration(opts.Interval) * time.Second)
 
 	go read_line(bufio.NewReader(os.Stdin), new_line)
 	go read_key(key_pressed)
