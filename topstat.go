@@ -17,7 +17,7 @@ import (
 )
 
 type Options struct {
-	Metrics []string `short:"m" long:"metric" description:"Metrics to display default:sum default:average" default:"sum" default:"average" value-name:"METRIC"`
+	Metrics []string `short:"m" long:"metric" description:"Metrics to display" default:"sum" default:"average" value-name:"METRIC"`
 }
 
 func main() {
