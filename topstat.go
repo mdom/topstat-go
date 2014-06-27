@@ -99,35 +99,29 @@ func update_element(m map[string]Stat, line string) (err error) {
 	if err != nil {
 		return err
 	}
-	if stat, ok := m[element]; !ok {
-		m[element] = Stat{
-			sum:       num,
-			average:   num,
-			seen:      1,
-			element:   element,
-			min:       num,
-			max:       num,
-			last_seen: time.Now(),
-		}
-	} else {
-		max := stat.max
-		min := stat.min
-		if num > max {
-			max = num
-		}
-		if num < min {
-			min = num
-		}
+	stat, ok := m[element]
 
-		m[element] = Stat{
-			sum:       stat.sum + num,
-			average:   ((stat.average*float64(stat.seen) + num) / (float64(stat.seen) + 1)),
-			seen:      stat.seen + 1,
-			element:   element,
-			min:       min,
-			max:       max,
-			last_seen: time.Now(),
-		}
+	if !ok {
+		stat = Stat{}
+	}
+
+	max := stat.max
+	min := stat.min
+	if num > max {
+		max = num
+	}
+	if num < min {
+		min = num
+	}
+
+	m[element] = Stat{
+		sum:       stat.sum + num,
+		average:   ((stat.average*float64(stat.seen) + num) / (float64(stat.seen) + 1)),
+		seen:      stat.seen + 1,
+		element:   element,
+		min:       min,
+		max:       max,
+		last_seen: time.Now(),
 	}
 	return
 }
