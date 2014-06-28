@@ -11,6 +11,8 @@ type Stat struct {
 	last_seen time.Time
 	seen      int
 	element   string
+type StatMap struct {
+	stats map[string]Stat
 }
 
 type Stats []Stat
@@ -46,9 +48,9 @@ func (s ByLastSeen) Len() int           { return len(s) }
 func (s ByLastSeen) Less(i, j int) bool { return s[i].last_seen.After(s[j].last_seen) }
 func (s ByLastSeen) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
-func statsort(sort_order string, m map[string]Stat) Stats {
+func (statmap *StatMap) statsort(sort_order string) Stats {
 	var s Stats
-	for _, stat := range m {
+	for _, stat := range statmap.stats {
 		s = append(s, stat)
 	}
 	switch sort_order {
@@ -68,8 +70,8 @@ func statsort(sort_order string, m map[string]Stat) Stats {
 	return s
 }
 
-func elementsort(sort_order string, m map[string]Stat) []string {
-	stats := statsort(sort_order, m)
+func (statmap *StatMap) elementsort(sort_order string) []string {
+	stats := statmap.statsort(sort_order)
 	var keys []string
 	for _, stat := range stats {
 		keys = append(keys, stat.element)
@@ -77,15 +79,51 @@ func elementsort(sort_order string, m map[string]Stat) []string {
 	return keys
 }
 
-func purge_stats(purge_method string, keep int, m map[string]Stat) (purged bool) {
-	keys := elementsort(purge_method, m)
+func (statmap *StatMap) purge_stats(purge_method string, keep int) (purged bool) {
+	keys := statmap.elementsort(purge_method)
 	if len(keys) > keep {
 		keys = keys[keep:len(keys)]
 		for _, key := range keys {
-			delete(m, key)
+			delete(statmap.stats, key)
 		}
 		return true
 	}
 
 	return false
+}
+
+func (statmap *StatMap) update_element(line string) (err error) {
+
+	statmap.Lock()
+	defer statmap.Unlock()
+
+	element, num, err := split_line(line)
+	if err != nil {
+		return err
+	}
+	stat, ok := statmap.stats[element]
+
+	if !ok {
+		stat = Stat{}
+	}
+
+	max := stat.max
+	min := stat.min
+	if num > max {
+		max = num
+	}
+	if num < min {
+		min = num
+	}
+
+	statmap.stats[element] = Stat{
+		sum:       stat.sum + num,
+		average:   ((stat.average*float64(stat.seen) + num) / (float64(stat.seen) + 1)),
+		seen:      stat.seen + 1,
+		element:   element,
+		min:       min,
+		max:       max,
+		last_seen: time.Now(),
+	}
+	return
 }

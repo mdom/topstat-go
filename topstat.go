@@ -45,7 +45,9 @@ func main() {
 	}
 	defer termbox.Close()
 
-	m := make(map[string]Stat)
+	statmap := &StatMap{
+		stats: make(map[string]Stat),
+	}
 
 	new_line := make(chan string)
 	key_pressed := make(chan termbox.Event)
@@ -58,8 +60,10 @@ loop:
 	for {
 		select {
 		case <-tick:
-			purge_stats(opts.Purge, opts.Keep, m)
-			update_screen(pipe_open, opts.Metrics, statsort(sort_order, m))
+			if opts.Keep != -1 {
+				statmap.purge_stats(opts.Purge, opts.Keep)
+			}
+			update_screen(pipe_open, opts.Metrics, statmap.statsort(sort_order))
 		case event := <-key_pressed:
 			switch event.Type {
 			case termbox.EventKey:
@@ -81,53 +85,20 @@ loop:
 				}
 				switch event.Ch {
 				case 'l', 'a', 's', 'n', '<', '>':
-					update_screen(pipe_open, opts.Metrics, statsort(sort_order, m))
+					update_screen(pipe_open, opts.Metrics, statmap.statsort(sort_order))
 				}
 			case termbox.EventResize:
-				update_screen(pipe_open, opts.Metrics, statsort(sort_order, m))
+				update_screen(pipe_open, opts.Metrics, statmap.statsort(sort_order))
 			}
 		case line, line_ok := <-new_line:
 			if line_ok {
-				update_element(m, line)
+				statmap.update_element(line)
 			} else {
 				new_line = nil
 				pipe_open = false
 			}
 		}
 	}
-}
-
-func update_element(m map[string]Stat, line string) (err error) {
-
-	element, num, err := split_line(line)
-	if err != nil {
-		return err
-	}
-	stat, ok := m[element]
-
-	if !ok {
-		stat = Stat{}
-	}
-
-	max := stat.max
-	min := stat.min
-	if num > max {
-		max = num
-	}
-	if num < min {
-		min = num
-	}
-
-	m[element] = Stat{
-		sum:       stat.sum + num,
-		average:   ((stat.average*float64(stat.seen) + num) / (float64(stat.seen) + 1)),
-		seen:      stat.seen + 1,
-		element:   element,
-		min:       min,
-		max:       max,
-		last_seen: time.Now(),
-	}
-	return
 }
 
 func read_line(reader *bufio.Reader, c chan string) (num float64, element string, err error) {
