@@ -54,6 +54,10 @@ func (s ByLastSeen) Less(i, j int) bool { return s[i].last_seen.After(s[j].last_
 func (s ByLastSeen) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func (statmap *StatMap) statsort(sort_order string) Stats {
+
+	statmap.Lock()
+	defer statmap.Unlock()
+
 	var s Stats
 	for _, stat := range statmap.stats {
 		s = append(s, stat)
@@ -85,7 +89,12 @@ func (statmap *StatMap) elementsort(sort_order string) []string {
 }
 
 func (statmap *StatMap) purge_stats(purge_method string, keep int) (purged bool) {
+
 	keys := statmap.elementsort(purge_method)
+
+	statmap.Lock()
+	defer statmap.Unlock()
+
 	if len(keys) > keep {
 		keys = keys[keep:len(keys)]
 		for _, key := range keys {
