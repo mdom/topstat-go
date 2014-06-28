@@ -2,6 +2,7 @@ package main
 
 import "sort"
 import "time"
+import "sync"
 
 type Stat struct {
 	sum       float64
@@ -12,6 +13,7 @@ type Stat struct {
 	seen      int
 	element   string
 type StatMap struct {
+	sync.Mutex
 	stats map[string]Stat
 }
 
