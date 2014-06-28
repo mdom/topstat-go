@@ -12,6 +12,9 @@ type Stat struct {
 	last_seen time.Time
 	seen      int
 	element   string
+	decay     float64
+}
+
 type StatMap struct {
 	sync.Mutex
 	stats map[string]Stat
