@@ -28,6 +28,7 @@ type BySeen []Stat
 type ByMax []Stat
 type ByMin []Stat
 type ByLastSeen []Stat
+type ByDecay []Stat
 
 func (s BySum) Len() int           { return len(s) }
 func (s BySum) Less(i, j int) bool { return s[i].sum > s[j].sum }
