@@ -56,6 +56,24 @@ func (s ByLastSeen) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s ByDecay) Len() int           { return len(s) }
 func (s ByDecay) Less(i, j int) bool { return s[i].decay < s[j].decay }
 func (s ByDecay) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+
+func (statmap *StatMap) decay() {
+	c := time.Tick(1 * time.Second)
+	n := 0
+	for _ = range c {
+		statmap.Lock()
+		defer statmap.Unlock()
+		if n < 60 {
+			n++
+		}
+
+		for _, stat := range statmap.stats {
+			stat.decay = (1.0/3.0 - stat.decay) / float64(n)
+		}
+	}
+	return
+}
+
 func (statmap *StatMap) statsort(sort_order string) Stats {
 
 	statmap.Lock()

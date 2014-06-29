@@ -49,6 +49,8 @@ func main() {
 		stats: make(map[string]Stat),
 	}
 
+	go statmap.decay()
+
 	new_line := make(chan string)
 	key_pressed := make(chan termbox.Event)
 	tick := time.Tick(time.Duration(opts.Interval) * time.Second)
