@@ -67,8 +67,10 @@ func (statmap *StatMap) decay() {
 		}
 
 		statmap.Lock()
-		for _, stat := range statmap.stats {
+		for m, stat := range statmap.stats {
 			stat.decay = (1.0/3.0 - stat.decay) / float64(n)
+			statmap.stats[m] = stat
+
 		}
 		statmap.Unlock()
 	}
