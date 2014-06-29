@@ -57,6 +57,8 @@ func draw_element(y int, stat Stat, metrics []string) {
 			line.WriteFormat("%10.2f", stat.min)
 		case "max":
 			line.WriteFormat("%10.2f", stat.max)
+		case "decay":
+			line.WriteFormat("%10.2f", stat.decay)
 		case "lastseen":
 			line.WriteFormat("%10s", stat.last_seen.Format(time.Kitchen))
 		}
