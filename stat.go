@@ -159,6 +159,7 @@ func (statmap *StatMap) update_element(line string) (err error) {
 		min:       min,
 		max:       max,
 		last_seen: time.Now(),
+		decay:     stat.decay + 1,
 	}
 	return
 }
