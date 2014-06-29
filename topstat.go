@@ -74,6 +74,8 @@ loop:
 					break loop
 				case 'a':
 					sort_order = "average"
+				case 'd':
+					sort_order = "decay"
 				case 's':
 					sort_order = "sum"
 				case 'n':
@@ -86,7 +88,7 @@ loop:
 					sort_order = "last_seen"
 				}
 				switch event.Ch {
-				case 'l', 'a', 's', 'n', '<', '>':
+				case 'l', 'a','d', 's', 'n', '<', '>':
 					update_screen(pipe_open, opts.Metrics, statmap.statsort(sort_order))
 				}
 			case termbox.EventResize:
