@@ -19,7 +19,7 @@ import (
 type Options struct {
 	Metrics  []string `short:"m" long:"metric" description:"Metrics to display" default:"sum" default:"average" value-name:"METRIC"`
 	Interval int      `short:"i" long:"interval" description:"delay between screen updates" default:"2" value-name:"INTERVAL"`
-	Purge    string   `short:"p" long:"purge" description:"purge strategy" default:"average" value-name:"STRATEGY"`
+	Purge    string   `short:"p" long:"purge" description:"purge strategy" default:"decay" value-name:"STRATEGY"`
 	Keep     int      `short:"k" long:"keep" description:"keep NUM elements" default:"1000" value-name:"NUM"`
 }
 
