@@ -62,15 +62,15 @@ func (statmap *StatMap) decay() {
 	c := time.Tick(1 * time.Second)
 	n := 0
 	for _ = range c {
-		statmap.Lock()
-		defer statmap.Unlock()
 		if n < 60 {
 			n++
 		}
 
+		statmap.Lock()
 		for _, stat := range statmap.stats {
 			stat.decay = (1.0/3.0 - stat.decay) / float64(n)
 		}
+		statmap.Unlock()
 	}
 	return
 }
