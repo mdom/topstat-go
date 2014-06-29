@@ -53,6 +53,9 @@ func (s ByLastSeen) Len() int           { return len(s) }
 func (s ByLastSeen) Less(i, j int) bool { return s[i].last_seen.After(s[j].last_seen) }
 func (s ByLastSeen) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
+func (s ByDecay) Len() int           { return len(s) }
+func (s ByDecay) Less(i, j int) bool { return s[i].decay < s[j].decay }
+func (s ByDecay) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (statmap *StatMap) statsort(sort_order string) Stats {
 
 	statmap.Lock()
