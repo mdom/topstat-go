@@ -29,6 +29,36 @@ and build the program.
 
   go build
 
+=head1 OPTIONS
+
+=over 4 
+
+=item -m, --metric METRIC
+
+Selects what metrics to display and in what order. Possible values
+are I<sum>, I<average>, I<seen>, I<last-seen>, I<min>, I<max> and
+I<decay>. Defaults to I<sum> and I<average>.
+
+=item -i, --interval INTERVAL
+
+Delay between screen updates in seconds. Default to 2.
+
+=item -p, --purge STRATEGY
+
+Every second topstat sorts all elements by STRATEGY and only keeps the
+first elements. How many are kept is determined by the I<--keep>
+options. Defaults to I<decay>.
+
+=item -k, -keep NUM
+
+Number of elements to keep in every purge. Defaults to 1000.
+
+=item -h, --help
+
+Prints a short help message and exits.
+
+=back
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2014 Mario Domgoergen L<E<lt>mario@domgoergen.comE<gt>>
