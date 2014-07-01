@@ -65,7 +65,7 @@ loop:
 			if opts.Keep != -1 {
 				statmap.purge_stats(opts.Purge, opts.Keep)
 			}
-			update_screen(pipe_open, opts.Metrics, statmap.statsort(sort_order))
+			update_screen(pipe_open, opts.Metrics, statmap.fastsort(sort_order))
 		case event := <-key_pressed:
 			switch event.Type {
 			case termbox.EventKey:
@@ -89,10 +89,10 @@ loop:
 				}
 				switch event.Ch {
 				case 'l', 'a','d', 's', 'n', '<', '>':
-					update_screen(pipe_open, opts.Metrics, statmap.statsort(sort_order))
+					update_screen(pipe_open, opts.Metrics, statmap.fastsort(sort_order))
 				}
 			case termbox.EventResize:
-				update_screen(pipe_open, opts.Metrics, statmap.statsort(sort_order))
+				update_screen(pipe_open, opts.Metrics, statmap.fastsort(sort_order))
 			}
 		case line, line_ok := <-new_line:
 			if line_ok {

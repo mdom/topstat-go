@@ -3,6 +3,7 @@ package main
 import "sort"
 import "time"
 import "sync"
+import "github.com/nsf/termbox-go"
 
 type Stat struct {
 	sum       float64
@@ -137,6 +138,45 @@ func (statmap *StatMap) purge_stats(purge_method string, keep int) (purged bool)
 	return false
 }
 
+var dirty_elements Stats
+var last_winner Stats
+
+func (statmap *StatMap) fastsort(sort_order string) Stats {
+	_, y := termbox.Size()
+	max_elements := y - 2
+
+	if len(last_winner)+len(dirty_elements) != max_elements {
+		dirty_elements = Stats{}
+		last_winner = statmap.sort(sort_order)
+		if len(last_winner) > max_elements {
+			last_winner = last_winner[:max_elements]
+		}
+		return last_winner
+	}
+
+	statmap.Lock()
+
+	var s Stats
+
+	for _, stat := range dirty_elements {
+		s = append(s, stat)
+	}
+
+	for _, stat := range last_winner {
+		s = append(s, stat)
+	}
+
+	statmap.Unlock()
+
+	s.sort(sort_order)
+
+	if len(s) > max_elements {
+		s = s[:max_elements]
+	}
+	last_winner = s
+	return last_winner
+}
+
 func (statmap *StatMap) update_element(line string) (err error) {
 
 	statmap.Lock()
@@ -171,5 +211,6 @@ func (statmap *StatMap) update_element(line string) (err error) {
 		last_seen: time.Now(),
 		decay:     stat.decay + 1,
 	}
+	dirty_elements = append(dirty_elements, statmap.stats[element])
 	return
 }
