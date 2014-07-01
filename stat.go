@@ -86,6 +86,11 @@ func (statmap *StatMap) sort(sort_order string) Stats {
 	for _, stat := range statmap.stats {
 		s = append(s, stat)
 	}
+	s.sort(sort_order)
+	return s
+}
+
+func (s Stats) sort(sort_order string) {
 	switch sort_order {
 	case "sum":
 		sort.Sort(BySum(s))
@@ -102,7 +107,7 @@ func (statmap *StatMap) sort(sort_order string) Stats {
 	case "last_seen":
 		sort.Sort(ByLastSeen(s))
 	}
-	return s
+	return
 }
 
 func (statmap *StatMap) elementsort(sort_order string) []string {
