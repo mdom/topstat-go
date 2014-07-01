@@ -77,7 +77,7 @@ func (statmap *StatMap) decay() {
 	return
 }
 
-func (statmap *StatMap) statsort(sort_order string) Stats {
+func (statmap *StatMap) sort(sort_order string) Stats {
 
 	statmap.Lock()
 	defer statmap.Unlock()
@@ -106,7 +106,7 @@ func (statmap *StatMap) statsort(sort_order string) Stats {
 }
 
 func (statmap *StatMap) elementsort(sort_order string) []string {
-	stats := statmap.statsort(sort_order)
+	stats := statmap.sort(sort_order)
 	var keys []string
 	for _, stat := range stats {
 		keys = append(keys, stat.element)
