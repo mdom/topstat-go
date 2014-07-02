@@ -18,10 +18,10 @@ type Stat struct {
 
 type StatMap struct {
 	sync.Mutex
-	stats map[string]Stat
-	sort_order string
+	stats        map[string]Stat
+	sort_order   string
 	purge_method string
-	max_len int
+	max_len      int
 }
 
 type Stats []Stat
