@@ -47,6 +47,8 @@ func main() {
 	statmap := &StatMap{
 		stats: make(map[string]Stat),
 		sort_order: "sum",
+		purge_method: opts.Purge,
+		max_len: opts.Keep,
 	}
 
 	go statmap.decay()
@@ -62,9 +64,7 @@ loop:
 	for {
 		select {
 		case <-tick:
-			if opts.Keep != -1 {
-				statmap.purge_stats(opts.Purge, opts.Keep)
-			}
+			statmap.purge()
 			update_screen(pipe_open, opts.Metrics, statmap.fastsort())
 		case event := <-key_pressed:
 			switch event.Type {

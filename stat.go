@@ -20,6 +20,8 @@ type StatMap struct {
 	sync.Mutex
 	stats map[string]Stat
 	sort_order string
+	purge_method string
+	max_len int
 }
 
 type Stats []Stat
@@ -112,26 +114,24 @@ func (s Stats) sort(sort_order string) {
 	return
 }
 
-func (statmap *StatMap) elementsort() []string {
-	stats := statmap.sort()
-	var keys []string
-	for _, stat := range stats {
-		keys = append(keys, stat.element)
+func (statmap *StatMap) purge() (purged bool) {
+	if statmap.max_len == -1 {
+		return false
 	}
-	return keys
-}
 
-func (statmap *StatMap) purge_stats(purge_method string, keep int) (purged bool) {
-
-	keys := statmap.elementsort()
+	var s Stats
+	for _, stat := range statmap.stats {
+		s = append(s, stat)
+	}
+	s.sort(statmap.purge_method)
 
 	statmap.Lock()
 	defer statmap.Unlock()
 
-	if len(keys) > keep {
-		keys = keys[keep:len(keys)]
-		for _, key := range keys {
-			delete(statmap.stats, key)
+	if len(s) > statmap.max_len {
+		s = s[statmap.max_len:len(s)]
+		for _, stat := range s {
+			delete(statmap.stats, stat.element)
 		}
 		return true
 	}
