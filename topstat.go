@@ -37,7 +37,6 @@ func main() {
 		log.Fatalln("stdin can't be connected to a terminal")
 	}
 	pipe_open := true
-	sort_order := "sum"
 
 	err := termbox.Init()
 	if err != nil {
@@ -47,6 +46,7 @@ func main() {
 
 	statmap := &StatMap{
 		stats: make(map[string]Stat),
+		sort_order: "sum",
 	}
 
 	go statmap.decay()
@@ -65,7 +65,7 @@ loop:
 			if opts.Keep != -1 {
 				statmap.purge_stats(opts.Purge, opts.Keep)
 			}
-			update_screen(pipe_open, opts.Metrics, statmap.fastsort(sort_order))
+			update_screen(pipe_open, opts.Metrics, statmap.fastsort())
 		case event := <-key_pressed:
 			switch event.Type {
 			case termbox.EventKey:
@@ -73,26 +73,26 @@ loop:
 				case 'q':
 					break loop
 				case 'a':
-					sort_order = "average"
+					statmap.sort_order = "average"
 				case 'd':
-					sort_order = "decay"
+					statmap.sort_order = "decay"
 				case 's':
-					sort_order = "sum"
+					statmap.sort_order = "sum"
 				case 'n':
-					sort_order = "seen"
+					statmap.sort_order = "seen"
 				case '<':
-					sort_order = "min"
+					statmap.sort_order = "min"
 				case '>':
-					sort_order = "max"
+					statmap.sort_order = "max"
 				case 'l':
-					sort_order = "last_seen"
+					statmap.sort_order = "last_seen"
 				}
 				switch event.Ch {
 				case 'l', 'a','d', 's', 'n', '<', '>':
-					update_screen(pipe_open, opts.Metrics, statmap.fastsort(sort_order))
+					update_screen(pipe_open, opts.Metrics, statmap.fastsort())
 				}
 			case termbox.EventResize:
-				update_screen(pipe_open, opts.Metrics, statmap.fastsort(sort_order))
+				update_screen(pipe_open, opts.Metrics, statmap.fastsort())
 			}
 		case line, line_ok := <-new_line:
 			if line_ok {

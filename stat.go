@@ -19,6 +19,7 @@ type Stat struct {
 type StatMap struct {
 	sync.Mutex
 	stats map[string]Stat
+	sort_order string
 }
 
 type Stats []Stat
@@ -78,7 +79,7 @@ func (statmap *StatMap) decay() {
 	return
 }
 
-func (statmap *StatMap) sort(sort_order string) Stats {
+func (statmap *StatMap) sort() Stats {
 
 	statmap.Lock()
 	defer statmap.Unlock()
@@ -87,7 +88,7 @@ func (statmap *StatMap) sort(sort_order string) Stats {
 	for _, stat := range statmap.stats {
 		s = append(s, stat)
 	}
-	s.sort(sort_order)
+	s.sort(statmap.sort_order)
 	return s
 }
 
@@ -111,8 +112,8 @@ func (s Stats) sort(sort_order string) {
 	return
 }
 
-func (statmap *StatMap) elementsort(sort_order string) []string {
-	stats := statmap.sort(sort_order)
+func (statmap *StatMap) elementsort() []string {
+	stats := statmap.sort()
 	var keys []string
 	for _, stat := range stats {
 		keys = append(keys, stat.element)
@@ -122,7 +123,7 @@ func (statmap *StatMap) elementsort(sort_order string) []string {
 
 func (statmap *StatMap) purge_stats(purge_method string, keep int) (purged bool) {
 
-	keys := statmap.elementsort(purge_method)
+	keys := statmap.elementsort()
 
 	statmap.Lock()
 	defer statmap.Unlock()
@@ -141,13 +142,13 @@ func (statmap *StatMap) purge_stats(purge_method string, keep int) (purged bool)
 var dirty_elements Stats
 var last_winner Stats
 
-func (statmap *StatMap) fastsort(sort_order string) Stats {
+func (statmap *StatMap) fastsort() Stats {
 	_, y := termbox.Size()
 	max_elements := y - 2
 
 	if len(last_winner)+len(dirty_elements) != max_elements {
 		dirty_elements = Stats{}
-		last_winner = statmap.sort(sort_order)
+		last_winner = statmap.sort()
 		if len(last_winner) > max_elements {
 			last_winner = last_winner[:max_elements]
 		}
@@ -168,7 +169,7 @@ func (statmap *StatMap) fastsort(sort_order string) Stats {
 
 	statmap.Unlock()
 
-	s.sort(sort_order)
+	s.sort(statmap.sort_order)
 
 	if len(s) > max_elements {
 		s = s[:max_elements]
