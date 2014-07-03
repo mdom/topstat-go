@@ -145,7 +145,12 @@ func (statmap *StatMap) fastsort() Stats {
 
 	n := statmap.top_n
 
-	if len(statmap.top)+len(statmap.dirty) != n {
+	// fastsort isn't possible in the following cases:
+	// 1. len(statmap.top) < n 
+	//    -> The screen got bigger and maybe elements that arent't dirty or in the top tier should be displayed
+	//    -> there aren't enough elements to fill the display
+
+	if len(statmap.top) < n {
 		statmap.dirty = Stats{}
 		s := statmap.sort()
 		if len(s) > n {
