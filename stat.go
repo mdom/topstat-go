@@ -160,6 +160,12 @@ func (statmap *StatMap) fastsort() Stats {
 		return s
 	}
 
+	// 2. no dirty elements and same or smaller screen size
+
+	if len(statmap.dirty) == 0 {
+		return statmap.top
+	}
+
 	statmap.Lock()
 
 	var s Stats
