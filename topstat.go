@@ -91,7 +91,7 @@ loop:
 					statmap.sort_order = "last_seen"
 				}
 				switch event.Ch {
-				case 'l', 'a','d', 's', 'n', '<', '>':
+				case 'l', 'a', 'd', 's', 'n', '<', '>':
 					update_screen(pipe_open, opts.Metrics, statmap.fastsort())
 				}
 			case termbox.EventResize:
