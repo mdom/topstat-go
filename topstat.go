@@ -44,11 +44,14 @@ func main() {
 	}
 	defer termbox.Close()
 
+	_, y := termbox.Size()
+
 	statmap := &StatMap{
-		stats: make(map[string]Stat),
-		sort_order: "sum",
+		stats:        make(map[string]Stat),
+		sort_order:   "sum",
 		purge_method: opts.Purge,
-		max_len: opts.Keep,
+		max_len:      opts.Keep,
+		top_n:        y - 2,
 	}
 
 	go statmap.decay()
@@ -92,6 +95,8 @@ loop:
 					update_screen(pipe_open, opts.Metrics, statmap.fastsort())
 				}
 			case termbox.EventResize:
+				_, y := termbox.Size()
+				statmap.top_n = y - 2
 				update_screen(pipe_open, opts.Metrics, statmap.fastsort())
 			}
 		case line, line_ok := <-new_line:

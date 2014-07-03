@@ -3,7 +3,6 @@ package main
 import "sort"
 import "time"
 import "sync"
-import "github.com/nsf/termbox-go"
 
 type Stat struct {
 	sum       float64
@@ -22,6 +21,9 @@ type StatMap struct {
 	sort_order   string
 	purge_method string
 	max_len      int
+	top_n        int
+	top          Stats
+	dirty        Stats
 }
 
 type Stats []Stat
@@ -139,31 +141,29 @@ func (statmap *StatMap) purge() (purged bool) {
 	return false
 }
 
-var dirty_elements Stats
-var last_winner Stats
-
 func (statmap *StatMap) fastsort() Stats {
-	_, y := termbox.Size()
-	max_elements := y - 2
 
-	if len(last_winner)+len(dirty_elements) != max_elements {
-		dirty_elements = Stats{}
-		last_winner = statmap.sort()
-		if len(last_winner) > max_elements {
-			last_winner = last_winner[:max_elements]
+	n := statmap.top_n
+
+	if len(statmap.top)+len(statmap.dirty) != n {
+		statmap.dirty = Stats{}
+		s := statmap.sort()
+		if len(s) > n {
+			s = s[:n]
 		}
-		return last_winner
+		statmap.top = s
+		return s
 	}
 
 	statmap.Lock()
 
 	var s Stats
 
-	for _, stat := range dirty_elements {
+	for _, stat := range statmap.dirty {
 		s = append(s, stat)
 	}
 
-	for _, stat := range last_winner {
+	for _, stat := range statmap.top {
 		s = append(s, stat)
 	}
 
@@ -171,11 +171,11 @@ func (statmap *StatMap) fastsort() Stats {
 
 	s.sort(statmap.sort_order)
 
-	if len(s) > max_elements {
-		s = s[:max_elements]
+	if len(s) > n {
+		s = s[:n]
 	}
-	last_winner = s
-	return last_winner
+	statmap.top = s
+	return s
 }
 
 func (statmap *StatMap) update_element(line string) (err error) {
@@ -212,6 +212,6 @@ func (statmap *StatMap) update_element(line string) (err error) {
 		last_seen: time.Now(),
 		decay:     stat.decay + 1,
 	}
-	dirty_elements = append(dirty_elements, statmap.stats[element])
+	statmap.dirty = append(statmap.dirty, statmap.stats[element])
 	return
 }
