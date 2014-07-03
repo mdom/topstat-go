@@ -76,19 +76,19 @@ loop:
 				case 'q':
 					break loop
 				case 'a':
-					statmap.sortOrder = "average"
+					statmap.SetSortOrder("average")
 				case 'd':
-					statmap.sortOrder = "decay"
+					statmap.SetSortOrder("decay")
 				case 's':
-					statmap.sortOrder = "sum"
+					statmap.SetSortOrder("sum")
 				case 'n':
-					statmap.sortOrder = "seen"
+					statmap.SetSortOrder("seen")
 				case '<':
-					statmap.sortOrder = "min"
+					statmap.SetSortOrder("min")
 				case '>':
-					statmap.sortOrder = "max"
+					statmap.SetSortOrder("max")
 				case 'l':
-					statmap.sortOrder = "last_seen"
+					statmap.SetSortOrder("last_seen")
 				}
 				switch event.Ch {
 				case 'l', 'a', 'd', 's', 'n', '<', '>':

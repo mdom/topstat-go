@@ -83,6 +83,12 @@ func (statmap *StatMap) decay() {
 	return
 }
 
+func (statmap *StatMap) SetSortOrder(sortOrder string) {
+	statmap.sortOrder = sortOrder
+	statmap.top = Stats{}
+	return
+}
+
 func (statmap *StatMap) sort() Stats {
 
 	statmap.Lock()
