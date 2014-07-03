@@ -7,25 +7,25 @@ import (
 	"time"
 )
 
-func update_screen(pipe_open bool, metrics []string, stats Stats) {
+func updateScreen(pipeOpen bool, metrics []string, stats Stats) {
 
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-	draw_header(metrics)
+	drawHeader(metrics)
 
 	y := 1
 	_, height := termbox.Size()
 	for _, stat := range stats {
-		draw_element(y, stat, metrics)
+		drawElement(y, stat, metrics)
 		y += 1
 		if y == height-1 {
 			break
 		}
 	}
-	draw_footer(pipe_open)
+	drawFooter(pipeOpen)
 	termbox.Flush()
 }
 
-func draw_line(y int, content string, bg termbox.Attribute) {
+func drawLine(y int, content string, bg termbox.Attribute) {
 	length, _ := termbox.Size()
 	x := 0
 	for _, r := range content {
@@ -42,7 +42,7 @@ func draw_line(y int, content string, bg termbox.Attribute) {
 
 }
 
-func draw_element(y int, stat Stat, metrics []string) {
+func drawElement(y int, stat Stat, metrics []string) {
 
 	var line MyBuffer
 	for _, metric := range metrics {
@@ -60,12 +60,12 @@ func draw_element(y int, stat Stat, metrics []string) {
 		case "decay":
 			line.WriteFormat("%10.2f", stat.decay)
 		case "lastseen":
-			line.WriteFormat("%10s", stat.last_seen.Format(time.Kitchen))
+			line.WriteFormat("%10s", stat.lastSeen.Format(time.Kitchen))
 		}
 		line.WriteString(" ")
 	}
 	line.WriteFormat("%s", stat.element)
-	draw_line(y, line.String(), termbox.ColorDefault)
+	drawLine(y, line.String(), termbox.ColorDefault)
 	return
 }
 
@@ -77,25 +77,25 @@ func (b *MyBuffer) WriteFormat(format string, thing interface{}) {
 	b.WriteString(fmt.Sprintf(format, thing))
 }
 
-func draw_header(metrics []string) {
+func drawHeader(metrics []string) {
 	var line bytes.Buffer
 	for _, metric := range metrics {
 		line.WriteString(fmt.Sprintf("%10s ", metric))
 	}
 	line.WriteString("element")
-	draw_line(0, line.String(), termbox.ColorDefault|termbox.AttrReverse)
+	drawLine(0, line.String(), termbox.ColorDefault|termbox.AttrReverse)
 }
 
-func draw_footer(pipe_open bool) {
+func drawFooter(pipeOpen bool) {
 	_, height := termbox.Size()
 	content := "reading from pipe"
-	if !pipe_open {
+	if !pipeOpen {
 		content = "pipe is closed"
 	}
-	draw_line(height-1, content, termbox.ColorDefault|termbox.AttrReverse)
+	drawLine(height-1, content, termbox.ColorDefault|termbox.AttrReverse)
 }
 
-func read_key(c chan termbox.Event) {
+func readKey(c chan termbox.Event) {
 	for {
 		c <- termbox.PollEvent()
 	}

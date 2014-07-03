@@ -36,7 +36,7 @@ func main() {
 	if terminal.IsTerminal(syscall.Stdin) {
 		log.Fatalln("stdin can't be connected to a terminal")
 	}
-	pipe_open := true
+	pipeOpen := true
 
 	err := termbox.Init()
 	if err != nil {
@@ -48,69 +48,69 @@ func main() {
 
 	statmap := &StatMap{
 		stats:        make(map[string]Stat),
-		sort_order:   "sum",
-		purge_method: opts.Purge,
-		max_len:      opts.Keep,
-		top_n:        y - 2,
+		sortOrder:   "sum",
+		purgeMethod: opts.Purge,
+		maxLen:      opts.Keep,
+		topN:        y - 2,
 	}
 
 	go statmap.decay()
 
-	new_line := make(chan string)
-	key_pressed := make(chan termbox.Event)
+	newLine := make(chan string)
+	keyPressed := make(chan termbox.Event)
 	tick := time.Tick(time.Duration(opts.Interval) * time.Second)
 
-	go read_line(bufio.NewReader(os.Stdin), new_line)
-	go read_key(key_pressed)
+	go readLine(bufio.NewReader(os.Stdin), newLine)
+	go readKey(keyPressed)
 
 loop:
 	for {
 		select {
 		case <-tick:
 			statmap.purge()
-			update_screen(pipe_open, opts.Metrics, statmap.fastsort())
-		case event := <-key_pressed:
+			updateScreen(pipeOpen, opts.Metrics, statmap.fastsort())
+		case event := <-keyPressed:
 			switch event.Type {
 			case termbox.EventKey:
 				switch event.Ch {
 				case 'q':
 					break loop
 				case 'a':
-					statmap.sort_order = "average"
+					statmap.sortOrder = "average"
 				case 'd':
-					statmap.sort_order = "decay"
+					statmap.sortOrder = "decay"
 				case 's':
-					statmap.sort_order = "sum"
+					statmap.sortOrder = "sum"
 				case 'n':
-					statmap.sort_order = "seen"
+					statmap.sortOrder = "seen"
 				case '<':
-					statmap.sort_order = "min"
+					statmap.sortOrder = "min"
 				case '>':
-					statmap.sort_order = "max"
+					statmap.sortOrder = "max"
 				case 'l':
-					statmap.sort_order = "last_seen"
+					statmap.sortOrder = "last_seen"
 				}
 				switch event.Ch {
 				case 'l', 'a', 'd', 's', 'n', '<', '>':
-					update_screen(pipe_open, opts.Metrics, statmap.fastsort())
+					updateScreen(pipeOpen, opts.Metrics, statmap.fastsort())
 				}
 			case termbox.EventResize:
 				_, y := termbox.Size()
-				statmap.top_n = y - 2
-				update_screen(pipe_open, opts.Metrics, statmap.fastsort())
+				statmap.topN = y - 2
+				updateScreen(pipeOpen, opts.Metrics, statmap.fastsort())
 			}
-		case line, line_ok := <-new_line:
-			if line_ok {
-				statmap.update_element(line)
+		case line, lineOk := <-newLine:
+			if lineOk {
+				statmap.updateElement(line)
 			} else {
-				new_line = nil
-				pipe_open = false
+				newLine = nil
+				pipeOpen = false
 			}
 		}
 	}
 }
 
-func read_line(reader *bufio.Reader, c chan string) (num float64, element string, err error) {
+func readLine(reader *bufio.Reader, c chan string) (num float64, element string, err error) {
 
 	for {
 		line, err := reader.ReadString('\n')
@@ -124,7 +124,7 @@ func read_line(reader *bufio.Reader, c chan string) (num float64, element string
 	return
 }
 
-func split_line(line string) (element string, num float64, err error) {
+func splitLine(line string) (element string, num float64, err error) {
 	line = strings.Trim(line, " \n")
 	z := regexp.MustCompile(" +").Split(line, 2)
 

@@ -9,7 +9,7 @@ type Stat struct {
 	average   float64
 	min       float64
 	max       float64
-	last_seen time.Time
+	lastSeen time.Time
 	seen      int
 	element   string
 	decay     float64
@@ -18,10 +18,10 @@ type Stat struct {
 type StatMap struct {
 	sync.Mutex
 	stats        map[string]Stat
-	sort_order   string
-	purge_method string
-	max_len      int
-	top_n        int
+	sortOrder    string
+	purgeMethod string
+	maxLen      int
+	topN        int
 	top          Stats
 	dirty        Stats
 }
@@ -57,7 +57,7 @@ func (s ByMin) Less(i, j int) bool { return s[i].min < s[j].min }
 func (s ByMin) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func (s ByLastSeen) Len() int           { return len(s) }
-func (s ByLastSeen) Less(i, j int) bool { return s[i].last_seen.After(s[j].last_seen) }
+func (s ByLastSeen) Less(i, j int) bool { return s[i].lastSeen.After(s[j].lastSeen) }
 func (s ByLastSeen) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func (s ByDecay) Len() int           { return len(s) }
@@ -92,12 +92,12 @@ func (statmap *StatMap) sort() Stats {
 	for _, stat := range statmap.stats {
 		s = append(s, stat)
 	}
-	s.sort(statmap.sort_order)
+	s.sort(statmap.sortOrder)
 	return s
 }
 
-func (s Stats) sort(sort_order string) {
-	switch sort_order {
+func (s Stats) sort(sortOrder string) {
+	switch sortOrder {
 	case "sum":
 		sort.Sort(BySum(s))
 	case "average":
@@ -117,7 +117,7 @@ func (s Stats) sort(sort_order string) {
 }
 
 func (statmap *StatMap) purge() (purged bool) {
-	if statmap.max_len == -1 {
+	if statmap.maxLen == -1 {
 		return false
 	}
 
@@ -125,13 +125,13 @@ func (statmap *StatMap) purge() (purged bool) {
 	for _, stat := range statmap.stats {
 		s = append(s, stat)
 	}
-	s.sort(statmap.purge_method)
+	s.sort(statmap.purgeMethod)
 
 	statmap.Lock()
 	defer statmap.Unlock()
 
-	if len(s) > statmap.max_len {
-		s = s[statmap.max_len:len(s)]
+	if len(s) > statmap.maxLen {
+		s = s[statmap.maxLen:len(s)]
 		for _, stat := range s {
 			delete(statmap.stats, stat.element)
 		}
@@ -143,7 +143,7 @@ func (statmap *StatMap) purge() (purged bool) {
 
 func (statmap *StatMap) fastsort() Stats {
 
-	n := statmap.top_n
+	n := statmap.topN
 
 	// fastsort isn't possible in the following cases:
 	// 1. len(statmap.top) < n 
@@ -180,7 +180,7 @@ func (statmap *StatMap) fastsort() Stats {
 
 	statmap.Unlock()
 
-	s.sort(statmap.sort_order)
+	s.sort(statmap.sortOrder)
 
 	if len(s) > n {
 		s = s[:n]
@@ -189,12 +189,12 @@ func (statmap *StatMap) fastsort() Stats {
 	return s
 }
 
-func (statmap *StatMap) update_element(line string) (err error) {
+func (statmap *StatMap) updateElement(line string) (err error) {
 
 	statmap.Lock()
 	defer statmap.Unlock()
 
-	element, num, err := split_line(line)
+	element, num, err := splitLine(line)
 	if err != nil {
 		return err
 	}
@@ -220,7 +220,7 @@ func (statmap *StatMap) update_element(line string) (err error) {
 		element:   element,
 		min:       min,
 		max:       max,
-		last_seen: time.Now(),
+		lastSeen: time.Now(),
 		decay:     stat.decay + 1,
 	}
 	statmap.dirty = append(statmap.dirty, statmap.stats[element])
