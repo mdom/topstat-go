@@ -104,11 +104,18 @@ loop:
 			}
 		case line, lineOk := <-newLine:
 			if lineOk {
-				num, element, err := splitLine(line)
-				if err != nil {
-					if opts.StrictParser {
-						termbox.Close()
-						log.Fatalln(err)
+				var num float64
+				var element string
+				if opts.OnlyElement {
+					num = 0
+					element = line
+				} else {
+					num, element, err = splitLine(line)
+					if err != nil {
+						if opts.StrictParser {
+							termbox.Close()
+							log.Fatalln(err)
+						}
 					}
 				}
 				statmap.updateElement(num, element)
