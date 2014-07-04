@@ -21,9 +21,10 @@ type StatMap struct {
 	sortOrder    string
 	purgeMethod string
 	maxLen      int
-	topN        int
 	top          Stats
 	dirty        Stats
+	tier        int
+	forceResort bool
 }
 
 type Stats []Stat
@@ -86,6 +87,12 @@ func (statmap *StatMap) decay() {
 func (statmap *StatMap) SetSortOrder(sortOrder string) {
 	statmap.sortOrder = sortOrder
 	statmap.top = Stats{}
+	return
+}
+
+func (statmap *StatMap) SetTier (tier int) {
+	statmap.tier = tier
+	statmap.forceResort = true
 	return
 }
 

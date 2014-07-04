@@ -51,7 +51,7 @@ func main() {
 		sortOrder:   "sum",
 		purgeMethod: opts.Purge,
 		maxLen:      opts.Keep,
-		topN:        y - 2,
+		tier:        y - 2,
 	}
 
 	go statmap.decay()
@@ -96,7 +96,7 @@ loop:
 				}
 			case termbox.EventResize:
 				_, y := termbox.Size()
-				statmap.topN = y - 2
+				statmap.setTier(y - 2)
 				updateScreen(pipeOpen, opts.Metrics, statmap.fastsort())
 			}
 		case line, lineOk := <-newLine:
