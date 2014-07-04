@@ -195,15 +195,11 @@ func (statmap *StatMap) fastsort() Stats {
 	return s
 }
 
-func (statmap *StatMap) updateElement(line string) (err error) {
+func (statmap *StatMap) updateElement(num float64, element string) (err error) {
 
 	statmap.Lock()
 	defer statmap.Unlock()
 
-	element, num, err := splitLine(line)
-	if err != nil {
-		return err
-	}
 	stat, ok := statmap.stats[element]
 
 	if !ok {

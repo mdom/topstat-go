@@ -101,7 +101,10 @@ loop:
 			}
 		case line, lineOk := <-newLine:
 			if lineOk {
-				statmap.updateElement(line)
+				num, element, err := splitLine(line)
+				if err == nil {
+					statmap.updateElement(num, element)
+				}
 			} else {
 				newLine = nil
 				pipeOpen = false
@@ -124,7 +127,7 @@ func readLine(reader *bufio.Reader, c chan string) (num float64, element string,
 	return
 }
 
-func splitLine(line string) (element string, num float64, err error) {
+func splitLine(line string) (num float64, element string, err error) {
 	line = strings.Trim(line, " \n")
 	z := regexp.MustCompile(" +").Split(line, 2)
 
