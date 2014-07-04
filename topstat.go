@@ -17,12 +17,12 @@ import (
 )
 
 type Options struct {
-	Metrics     []string `short:"m" long:"metric" description:"Metrics to display" default:"sum" default:"average" value-name:"METRIC"`
-	Interval    int      `short:"i" long:"interval" description:"delay between screen updates" default:"2" value-name:"INTERVAL"`
-	Purge       string   `short:"p" long:"purge" description:"purge strategy" default:"decay" value-name:"STRATEGY"`
-	Keep        int      `short:"k" long:"keep" description:"keep NUM elements" default:"1000" value-name:"NUM"`
-	OnlyElement bool     `short:"E" long:"only-element" description:"first element of stdin is not a number" default:"false"`
-	StrictParser bool    `short:"S" long:"strict" description:"" default:"false"`
+	Metrics      []string `short:"m" long:"metric" description:"Metrics to display" default:"sum" default:"average" value-name:"METRIC"`
+	Interval     int      `short:"i" long:"interval" description:"delay between screen updates" default:"2" value-name:"INTERVAL"`
+	Purge        string   `short:"p" long:"purge" description:"purge strategy" default:"decay" value-name:"STRATEGY"`
+	Keep         int      `short:"k" long:"keep" description:"keep NUM elements" default:"1000" value-name:"NUM"`
+	OnlyElement  bool     `short:"E" long:"only-element" description:"first element of stdin is not a number" default:"false"`
+	StrictParser bool     `short:"S" long:"strict" description:"" default:"false"`
 }
 
 func main() {
