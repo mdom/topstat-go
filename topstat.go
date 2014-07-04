@@ -47,7 +47,7 @@ func main() {
 	_, y := termbox.Size()
 
 	statmap := &StatMap{
-		stats:        make(map[string]Stat),
+		stats:       make(map[string]Stat),
 		sortOrder:   "sum",
 		purgeMethod: opts.Purge,
 		maxLen:      opts.Keep,

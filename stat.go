@@ -5,20 +5,20 @@ import "time"
 import "sync"
 
 type Stat struct {
-	sum       float64
-	average   float64
-	min       float64
-	max       float64
+	sum      float64
+	average  float64
+	min      float64
+	max      float64
 	lastSeen time.Time
-	seen      int
-	element   string
-	decay     float64
+	seen     int
+	element  string
+	decay    float64
 }
 
 type StatMap struct {
 	sync.Mutex
-	stats        map[string]Stat
-	sortOrder    string
+	stats       map[string]Stat
+	sortOrder   string
 	purgeMethod string
 	maxLen      int
 	top          Stats
@@ -90,7 +90,7 @@ func (statmap *StatMap) SetSortOrder(sortOrder string) {
 	return
 }
 
-func (statmap *StatMap) SetTier (tier int) {
+func (statmap *StatMap) SetTier(tier int) {
 	statmap.tier = tier
 	statmap.forceResort = true
 	return
@@ -223,14 +223,14 @@ func (statmap *StatMap) updateElement(num float64, element string) (err error) {
 	}
 
 	statmap.stats[element] = Stat{
-		sum:       stat.sum + num,
-		average:   ((stat.average*float64(stat.seen) + num) / (float64(stat.seen) + 1)),
-		seen:      stat.seen + 1,
-		element:   element,
-		min:       min,
-		max:       max,
+		sum:      stat.sum + num,
+		average:  ((stat.average*float64(stat.seen) + num) / (float64(stat.seen) + 1)),
+		seen:     stat.seen + 1,
+		element:  element,
+		min:      min,
+		max:      max,
 		lastSeen: time.Now(),
-		decay:     stat.decay + 1,
+		decay:    stat.decay + 1,
 	}
 	statmap.dirty = append(statmap.dirty, statmap.stats[element])
 	return
