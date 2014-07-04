@@ -86,7 +86,7 @@ func (statmap *StatMap) decay() {
 
 func (statmap *StatMap) SetSortOrder(sortOrder string) {
 	statmap.sortOrder = sortOrder
-	statmap.top = Stats{}
+	statmap.forceResort = true
 	return
 }
 
