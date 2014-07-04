@@ -97,7 +97,7 @@ loop:
 				}
 			case termbox.EventResize:
 				_, y := termbox.Size()
-				statmap.setTier(y - 2)
+				statmap.SetTier(y - 2)
 				updateScreen(pipeOpen, opts.Metrics, statmap.fastsort())
 			}
 		case line, lineOk := <-newLine:
