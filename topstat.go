@@ -52,6 +52,7 @@ func main() {
 		purgeMethod: opts.Purge,
 		maxLen:      opts.Keep,
 		tier:        y - 2,
+		dirty:       make(map[string]bool),
 	}
 
 	go statmap.decay()

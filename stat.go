@@ -21,10 +21,9 @@ type StatMap struct {
 	sortOrder   string
 	purgeMethod string
 	maxLen      int
-	top          Stats
-	dirty        Stats
 	tier        int
 	forceResort bool
+	dirty       map[string]bool
 }
 
 type Stats []Stat
@@ -156,49 +155,31 @@ func (statmap *StatMap) purge() (purged bool) {
 
 func (statmap *StatMap) fastsort() Stats {
 
-	n := statmap.topN
-
-	// fastsort isn't possible in the following cases:
-	// 1. len(statmap.top) < n 
-	//    -> The screen got bigger and maybe elements that arent't dirty or in the top tier should be displayed
-	//    -> there aren't enough elements to fill the display
-
-	if len(statmap.top) < n {
-		statmap.dirty = Stats{}
-		s := statmap.sort()
-		if len(s) > n {
-			s = s[:n]
-		}
-		statmap.top = s
-		return s
-	}
-
-	// 2. no dirty elements and same or smaller screen size
-
-	if len(statmap.dirty) == 0 {
-		return statmap.top
-	}
-
-	statmap.Lock()
+	n := statmap.tier
 
 	var s Stats
 
-	for _, stat := range statmap.dirty {
-		s = append(s, stat)
+	if statmap.forceResort {
+		statmap.dirty = make(map[string]bool)
+		s = statmap.sort()
+	} else {
+		statmap.Lock()
+		for element := range statmap.dirty {
+			s = append(s, statmap.stats[element])
+		}
+		statmap.Unlock()
+		s.sort(statmap.sortOrder)
 	}
-
-	for _, stat := range statmap.top {
-		s = append(s, stat)
-	}
-
-	statmap.Unlock()
-
-	s.sort(statmap.sortOrder)
 
 	if len(s) > n {
 		s = s[:n]
 	}
-	statmap.top = s
+
+	statmap.dirty = make(map[string]bool)
+	for _, stat := range s {
+		statmap.dirty[stat.element] = true
+	}
+
 	return s
 }
 
@@ -232,6 +213,6 @@ func (statmap *StatMap) updateElement(num float64, element string) (err error) {
 		lastSeen: time.Now(),
 		decay:    stat.decay + 1,
 	}
-	statmap.dirty = append(statmap.dirty, statmap.stats[element])
+	statmap.dirty[element] = true
 	return
 }
