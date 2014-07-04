@@ -17,10 +17,12 @@ import (
 )
 
 type Options struct {
-	Metrics  []string `short:"m" long:"metric" description:"Metrics to display" default:"sum" default:"average" value-name:"METRIC"`
-	Interval int      `short:"i" long:"interval" description:"delay between screen updates" default:"2" value-name:"INTERVAL"`
-	Purge    string   `short:"p" long:"purge" description:"purge strategy" default:"decay" value-name:"STRATEGY"`
-	Keep     int      `short:"k" long:"keep" description:"keep NUM elements" default:"1000" value-name:"NUM"`
+	Metrics     []string `short:"m" long:"metric" description:"Metrics to display" default:"sum" default:"average" value-name:"METRIC"`
+	Interval    int      `short:"i" long:"interval" description:"delay between screen updates" default:"2" value-name:"INTERVAL"`
+	Purge       string   `short:"p" long:"purge" description:"purge strategy" default:"decay" value-name:"STRATEGY"`
+	Keep        int      `short:"k" long:"keep" description:"keep NUM elements" default:"1000" value-name:"NUM"`
+	OnlyElement bool     `short:"E" long:"only-element" description:"first element of stdin is not a number" default:"false"`
+	StrictParser bool    `short:"S" long:"strict" description:"" default:"false"`
 }
 
 func main() {
@@ -103,9 +105,13 @@ loop:
 		case line, lineOk := <-newLine:
 			if lineOk {
 				num, element, err := splitLine(line)
-				if err == nil {
-					statmap.updateElement(num, element)
+				if err != nil {
+					if opts.StrictParser {
+						termbox.Close()
+						log.Fatalln(err)
+					}
 				}
+				statmap.updateElement(num, element)
 			} else {
 				newLine = nil
 				pipeOpen = false
@@ -134,11 +140,13 @@ func splitLine(line string) (num float64, element string, err error) {
 
 	if len(z) != 2 {
 		err = errors.New(fmt.Sprintf("Cannot split string into two element:<%+v> len: %d\n", z, len(z)))
+		element = line
 		return
 	}
 
 	num, err = strconv.ParseFloat(z[0], 64)
 	if err != nil {
+		element = line
 		return
 	}
 	element = z[1]
