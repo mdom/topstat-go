@@ -78,9 +78,9 @@ func (b *MyBuffer) WriteFormat(format string, thing interface{}) {
 }
 
 func drawHeader(metrics []string) {
-	var line bytes.Buffer
+	var line MyBuffer
 	for _, metric := range metrics {
-		line.WriteString(fmt.Sprintf("%10s ", metric))
+		line.WriteFormat("%10s ", metric)
 	}
 	line.WriteString("element")
 	drawLine(0, line.String(), termbox.ColorDefault|termbox.AttrReverse)
