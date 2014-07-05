@@ -111,19 +111,19 @@ func (statmap *StatMap) sort() Stats {
 func (s Stats) sort(sortOrder string) {
 	switch sortOrder {
 	case "sum":
-		sort.Sort(BySum(s))
+		sort.Stable(BySum(s))
 	case "average":
-		sort.Sort(ByAverage(s))
+		sort.Stable(ByAverage(s))
 	case "decay":
-		sort.Sort(ByDecay(s))
+		sort.Stable(ByDecay(s))
 	case "seen":
-		sort.Sort(BySeen(s))
+		sort.Stable(BySeen(s))
 	case "max":
-		sort.Sort(ByMax(s))
+		sort.Stable(ByMax(s))
 	case "min":
-		sort.Sort(ByMin(s))
+		sort.Stable(ByMin(s))
 	case "last_seen":
-		sort.Sort(ByLastSeen(s))
+		sort.Stable(ByLastSeen(s))
 	}
 	return
 }
