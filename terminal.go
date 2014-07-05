@@ -7,21 +7,26 @@ import (
 	"time"
 )
 
-func updateScreen(pipeOpen bool, metrics []string, stats Stats) {
+type Terminal struct {
+	pipeOpen *bool
+	metrics  []string
+}
+
+func (t *Terminal) updateScreen(stats Stats) {
 
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-	drawHeader(metrics)
+	t.drawHeader()
 
 	y := 1
 	_, height := termbox.Size()
 	for _, stat := range stats {
-		drawElement(y, stat, metrics)
+		t.drawElement(y, stat)
 		y += 1
 		if y == height-1 {
 			break
 		}
 	}
-	drawFooter(pipeOpen)
+	t.drawFooter()
 	termbox.Flush()
 }
 
@@ -42,10 +47,10 @@ func drawLine(y int, content string, bg termbox.Attribute) {
 
 }
 
-func drawElement(y int, stat Stat, metrics []string) {
+func (t *Terminal) drawElement(y int, stat Stat) {
 
 	var line MyBuffer
-	for _, metric := range metrics {
+	for _, metric := range t.metrics {
 		switch metric {
 		case "sum":
 			line.WriteFormat("%10.2f", stat.sum)
@@ -77,19 +82,19 @@ func (b *MyBuffer) WriteFormat(format string, thing interface{}) {
 	b.WriteString(fmt.Sprintf(format, thing))
 }
 
-func drawHeader(metrics []string) {
+func (t *Terminal) drawHeader() {
 	var line MyBuffer
-	for _, metric := range metrics {
+	for _, metric := range t.metrics {
 		line.WriteFormat("%10s ", metric)
 	}
 	line.WriteString("element")
 	drawLine(0, line.String(), termbox.ColorDefault|termbox.AttrReverse)
 }
 
-func drawFooter(pipeOpen bool) {
+func (t *Terminal) drawFooter() {
 	_, height := termbox.Size()
 	content := "reading from pipe"
-	if !pipeOpen {
+	if *t.pipeOpen == false {
 		content = "pipe is closed"
 	}
 	drawLine(height-1, content, termbox.ColorDefault|termbox.AttrReverse)

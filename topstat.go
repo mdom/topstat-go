@@ -40,6 +40,8 @@ func main() {
 	}
 	pipeOpen := true
 
+	t := Terminal{pipeOpen: &pipeOpen, metrics: opts.Metrics}
+
 	err := termbox.Init()
 	if err != nil {
 		panic(err)
@@ -71,7 +73,7 @@ loop:
 		select {
 		case <-tick:
 			statmap.purge()
-			updateScreen(pipeOpen, opts.Metrics, statmap.fastsort())
+			t.updateScreen(statmap.fastsort())
 		case event := <-keyPressed:
 			switch event.Type {
 			case termbox.EventKey:
@@ -95,12 +97,12 @@ loop:
 				}
 				switch event.Ch {
 				case 'l', 'a', 'd', 's', 'n', '<', '>':
-					updateScreen(pipeOpen, opts.Metrics, statmap.fastsort())
+					t.updateScreen(statmap.fastsort())
 				}
 			case termbox.EventResize:
 				_, y := termbox.Size()
 				statmap.SetTier(y - 2)
-				updateScreen(pipeOpen, opts.Metrics, statmap.fastsort())
+				t.updateScreen(statmap.fastsort())
 			}
 		case line, lineOk := <-newLine:
 			if lineOk {
