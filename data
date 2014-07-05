@@ -1,3 +1,3 @@
 #!/bin/bash
 
-while true;do for i in ~/*;do [ "1" -eq "$(( $RANDOM % 2))" ] && continue;echo "$RANDOM $i";done;sleep 1;done
+while true;do for i in ~/*;do [ "1" -eq "$(( $RANDOM % 2))" ] && continue;echo "$RANDOM $i";sleep 0.1;done;done
