@@ -94,12 +94,12 @@ func (t *Terminal) drawHeader() {
 
 func (t *Terminal) drawFooter() {
 	_, height := termbox.Size()
-	pipeState := "reading from pipe"
+	pipeState := "open"
 	if *t.pipeOpen == false {
-		pipeState = "pipe is closed"
+		pipeState = "closed"
 	}
 
-	content := fmt.Sprintf("%s | Elapsed: %s", pipeState, time.Since(t.startTime).String())
+	content := fmt.Sprintf("Pipe: %s | Elapsed: %s", pipeState, time.Since(t.startTime).String())
 
 	drawLine(height-1, content, termbox.ColorDefault|termbox.AttrReverse)
 }
