@@ -8,8 +8,9 @@ import (
 )
 
 type Terminal struct {
-	pipeOpen *bool
-	metrics  []string
+	pipeOpen  *bool
+	metrics   []string
+	startTime time.Time
 }
 
 func (t *Terminal) updateScreen(stats Stats) {
@@ -93,10 +94,13 @@ func (t *Terminal) drawHeader() {
 
 func (t *Terminal) drawFooter() {
 	_, height := termbox.Size()
-	content := "reading from pipe"
+	pipeState := "reading from pipe"
 	if *t.pipeOpen == false {
-		content = "pipe is closed"
+		pipeState = "pipe is closed"
 	}
+
+	content := fmt.Sprintf("%s | Elapsed: %s", pipeState, time.Since(t.startTime).String())
+
 	drawLine(height-1, content, termbox.ColorDefault|termbox.AttrReverse)
 }
 

@@ -40,7 +40,11 @@ func main() {
 	}
 	pipeOpen := true
 
-	t := Terminal{pipeOpen: &pipeOpen, metrics: opts.Metrics}
+	t := Terminal{
+		pipeOpen:  &pipeOpen,
+		metrics:   opts.Metrics,
+		startTime: time.Now(),
+	}
 
 	err := termbox.Init()
 	if err != nil {
