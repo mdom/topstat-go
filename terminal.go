@@ -27,7 +27,7 @@ func (t *Terminal) updateScreen(stats Stats) {
 			break
 		}
 	}
-	t.drawFooter()
+	t.drawFooter(len(stats))
 	termbox.Flush()
 }
 
@@ -92,14 +92,19 @@ func (t *Terminal) drawHeader() {
 	drawLine(0, line.String(), termbox.ColorDefault|termbox.AttrReverse)
 }
 
-func (t *Terminal) drawFooter() {
+func (t *Terminal) drawFooter(len int) {
 	_, height := termbox.Size()
 	pipeState := "open"
 	if *t.pipeOpen == false {
 		pipeState = "closed"
 	}
 
-	content := fmt.Sprintf("Pipe: %s | Elapsed: %s", pipeState, time.Since(t.startTime).String())
+	content := fmt.Sprintf(
+		"Pipe: %s | Elapsed: %s | Elements: %d",
+		pipeState,
+		time.Since(t.startTime).String(),
+		len,
+	)
 
 	drawLine(height-1, content, termbox.ColorDefault|termbox.AttrReverse)
 }
