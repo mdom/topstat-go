@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math"
 	"bytes"
 	"fmt"
 	"github.com/nsf/termbox-go"
@@ -57,8 +56,7 @@ func (t *Terminal) drawElement(y int, stat Stat) {
 		case "sum":
 			line.WriteFormat("%10.2f", stat.sum)
 		case "rate":
-			d := time.Since(t.startTime).Minutes()
-			line.WriteFormat("%10.2f", float64(stat.seen) / math.Ceil(float64(d)))
+			line.WriteFormat("%10.2f", stat.GetRate("minute",t.startTime))
 		case "average":
 			line.WriteFormat("%10.2f", stat.average)
 		case "seen":

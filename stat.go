@@ -3,6 +3,7 @@ package main
 import "sort"
 import "time"
 import "sync"
+import "math"
 
 type Stat struct {
 	sum      float64
@@ -217,4 +218,18 @@ func (statmap *StatMap) updateElement(num float64, element string) (err error) {
 	}
 	statmap.dirty[element] = true
 	return
+}
+
+func (s *Stat) GetRate(unit string, startTime time.Time) float64 {
+	now := time.Since(startTime)
+	var d float64
+	switch unit {
+	case "hour":
+		d = now.Hours()
+	case "minute":
+		d = now.Minutes()
+	case "second":
+		d = now.Seconds()
+	}
+	return float64(s.seen)/math.Ceil(d)
 }
