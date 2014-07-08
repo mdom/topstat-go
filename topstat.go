@@ -88,6 +88,8 @@ loop:
 					statmap.SetSortOrder("average")
 				case 'd':
 					statmap.SetSortOrder("decay")
+				case 'r':
+					statmap.SetSortOrder("seen")
 				case 's':
 					statmap.SetSortOrder("sum")
 				case 'n':
@@ -100,7 +102,7 @@ loop:
 					statmap.SetSortOrder("last_seen")
 				}
 				switch event.Ch {
-				case 'l', 'a', 'd', 's', 'n', '<', '>':
+				case 'l', 'a', 'd', 'r', 's', 'n', '<', '>':
 					t.updateScreen(statmap.fastsort())
 				}
 			case termbox.EventResize:

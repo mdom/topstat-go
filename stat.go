@@ -116,6 +116,8 @@ func (s Stats) sort(sortOrder string) {
 		sort.Stable(ByAverage(s))
 	case "decay":
 		sort.Stable(ByDecay(s))
+	case "rate":
+		sort.Stable(BySeen(s))
 	case "seen":
 		sort.Stable(BySeen(s))
 	case "max":

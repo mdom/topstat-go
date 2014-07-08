@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"bytes"
 	"fmt"
 	"github.com/nsf/termbox-go"
@@ -55,6 +56,9 @@ func (t *Terminal) drawElement(y int, stat Stat) {
 		switch metric {
 		case "sum":
 			line.WriteFormat("%10.2f", stat.sum)
+		case "rate":
+			d := time.Since(t.startTime).Minutes()
+			line.WriteFormat("%10.2f", float64(stat.seen) / math.Ceil(float64(d)))
 		case "average":
 			line.WriteFormat("%10.2f", stat.average)
 		case "seen":
