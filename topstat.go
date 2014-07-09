@@ -23,6 +23,7 @@ type Options struct {
 	Keep         int      `short:"k" long:"keep" description:"keep NUM elements" default:"1000" value-name:"NUM"`
 	OnlyElement  bool     `short:"E" long:"only-element" description:"first element of stdin is not a number" default:"false"`
 	StrictParser bool     `short:"S" long:"strict" description:"" default:"false"`
+	SortOrder    string   `short:"O" long:"sort-order" description:"metric to sort by (first metric)"`
 }
 
 func main() {
@@ -54,9 +55,14 @@ func main() {
 
 	_, y := termbox.Size()
 
+	sortOrder := opts.Metrics[0]
+	if opts.SortOrder != "" {
+		sortOrder = opts.SortOrder
+	}
+
 	statmap := &StatMap{
 		stats:       make(map[string]Stat),
-		sortOrder:   opts.Metrics[0],
+		sortOrder:   sortOrder,
 		purgeMethod: opts.Purge,
 		maxLen:      opts.Keep,
 		tier:        y - 2,
