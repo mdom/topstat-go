@@ -56,7 +56,7 @@ func main() {
 
 	statmap := &StatMap{
 		stats:       make(map[string]Stat),
-		sortOrder:   "sum",
+		sortOrder:   opts.Metrics[0],
 		purgeMethod: opts.Purge,
 		maxLen:      opts.Keep,
 		tier:        y - 2,
