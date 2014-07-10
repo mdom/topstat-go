@@ -1,9 +1,11 @@
 package main
 
-import "sort"
-import "time"
-import "sync"
-import "math"
+import (
+	"math"
+	"sort"
+	"sync"
+	"time"
+)
 
 type Stat struct {
 	sum      float64
