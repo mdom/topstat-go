@@ -14,6 +14,7 @@ type Stat struct {
 	seen     int
 	element  string
 	decay    float64
+	statmap  *StatMap
 }
 
 type StatMap struct {
@@ -215,6 +216,7 @@ func (statmap *StatMap) updateElement(num float64, element string) (err error) {
 		max:      max,
 		lastSeen: time.Now(),
 		decay:    stat.decay + 1,
+		statmap:  statmap,
 	}
 	statmap.dirty[element] = true
 	return
