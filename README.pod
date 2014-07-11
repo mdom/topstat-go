@@ -64,6 +64,34 @@ I<second>, I<minute> and I<hour>.
 
 =back
 
+=head1 METRICS
+
+=over 4
+
+=item Min
+
+The smallest value for this element.
+
+=item Max
+
+The biggest value for this element.
+
+=item Sum
+
+The sum of all values for this element.
+
+=item Average
+
+The average value of all values for this element. This corresponds to the the
+sum of all values divided by how often the element occured.
+
+=item Rate
+
+This metrics describes how often the element occured on average in a specific
+time frame. The time frame is configurable via I<--rate-unit>.
+
+=back
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2014 Mario Domgoergen L<E<lt>mario@domgoergen.comE<gt>>
