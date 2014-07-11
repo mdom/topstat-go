@@ -23,6 +23,7 @@ type Options struct {
 	Keep         int      `short:"k" long:"keep" description:"keep NUM elements" default:"1000" value-name:"NUM"`
 	OnlyElement  bool     `short:"E" long:"only-element" description:"first element of stdin is not a number" default:"false"`
 	StrictParser bool     `short:"S" long:"strict" description:"" default:"false"`
+	RateUnit     string   `short:"R" long:"rate-unit" description:"per unit time" default:"minute"`
 	SortOrder    string   `short:"O" long:"sort-order" description:"metric to sort by (first metric)"`
 }
 
@@ -67,6 +68,7 @@ func main() {
 		maxLen:      opts.Keep,
 		tier:        y - 2,
 		dirty:       make(map[string]bool),
+		rateUnit:    opts.RateUnit,
 	}
 
 	go statmap.decay()

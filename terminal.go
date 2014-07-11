@@ -56,7 +56,7 @@ func (t *Terminal) drawElement(y int, stat Stat) {
 		case "sum":
 			line.WriteFormat("%10.2f", stat.sum)
 		case "rate":
-			line.WriteFormat("%10.2f", stat.GetRate("minute",t.startTime))
+			line.WriteFormat("%10.2f", stat.GetRate(t.startTime))
 		case "average":
 			line.WriteFormat("%10.2f", stat.average)
 		case "seen":

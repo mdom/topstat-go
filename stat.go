@@ -28,6 +28,7 @@ type StatMap struct {
 	tier        int
 	forceResort bool
 	dirty       map[string]bool
+	rateUnit    string
 }
 
 type Stats []Stat
@@ -224,7 +225,8 @@ func (statmap *StatMap) updateElement(num float64, element string) (err error) {
 	return
 }
 
-func (s *Stat) GetRate(unit string, startTime time.Time) float64 {
+func (s *Stat) GetRate(startTime time.Time) float64 {
+	unit := s.statmap.rateUnit
 	now := time.Since(startTime)
 	var d float64
 	switch unit {
@@ -235,5 +237,5 @@ func (s *Stat) GetRate(unit string, startTime time.Time) float64 {
 	case "second":
 		d = now.Seconds()
 	}
-	return float64(s.seen)/math.Ceil(d)
+	return float64(s.seen) / math.Ceil(d)
 }
