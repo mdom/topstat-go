@@ -57,6 +57,11 @@ Number of elements to keep in every purge. Defaults to 1000.
 
 Prints a short help message and exits.
 
+=item --rate-unit
+
+Sets the time frame in which a rate is describes. Possible values are
+I<second>, I<minute> and I<hour>.
+
 =back
 
 =head1 COPYRIGHT AND LICENSE
