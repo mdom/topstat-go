@@ -123,6 +123,8 @@ func (s Stats) sort(sortOrder string) {
 		sort.Stable(ByDecay(s))
 	case "rate":
 		sort.Stable(BySeen(s))
+	case "percentage":
+		sort.Stable(BySeen(s))
 	case "seen":
 		sort.Stable(BySeen(s))
 	case "max":
@@ -238,4 +240,8 @@ func (s *Stat) GetRate(startTime time.Time) float64 {
 		d = now.Seconds()
 	}
 	return float64(s.seen) / math.Ceil(d)
+}
+
+func (s *Stat) GetPercentage() float64 {
+	return float64(s.seen) / float64(len(s.statmap.stats)) * 100
 }

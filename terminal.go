@@ -55,6 +55,8 @@ func (t *Terminal) drawElement(y int, stat Stat) {
 		switch metric {
 		case "sum":
 			line.WriteFormat("%10.2f", stat.sum)
+		case "percentage":
+			line.WriteFormat("%10.2f", stat.GetPercentage())
 		case "rate":
 			line.WriteFormat("%10.2f", stat.GetRate(t.startTime))
 		case "average":
