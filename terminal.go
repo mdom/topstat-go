@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/nsf/termbox-go"
+	"github.com/mdom/topstat/stat"
 	"time"
 )
 
@@ -13,7 +14,7 @@ type Terminal struct {
 	startTime time.Time
 }
 
-func (t *Terminal) updateScreen(stats Stats) {
+func (t *Terminal) updateScreen(stats stat.Stats) {
 
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	t.drawHeader()
@@ -48,33 +49,33 @@ func drawLine(y int, content string, bg termbox.Attribute) {
 
 }
 
-func (t *Terminal) drawElement(y int, stat Stat) {
+func (t *Terminal) drawElement(y int, stat stat.Stat) {
 
 	var line MyBuffer
 	for _, metric := range t.metrics {
 		switch metric {
 		case "sum":
-			line.WriteFormat("%10.2f", stat.sum)
+			line.WriteFormat("%10.2f", stat.Sum)
 		case "percentage":
 			line.WriteFormat("%10.2f", stat.GetPercentage())
 		case "rate":
 			line.WriteFormat("%10.2f", stat.GetRate(t.startTime))
 		case "average":
-			line.WriteFormat("%10.2f", stat.average)
+			line.WriteFormat("%10.2f", stat.Average)
 		case "seen":
-			line.WriteFormat("%10d", stat.seen)
+			line.WriteFormat("%10d", stat.Seen)
 		case "min":
-			line.WriteFormat("%10.2f", stat.min)
+			line.WriteFormat("%10.2f", stat.Min)
 		case "max":
-			line.WriteFormat("%10.2f", stat.max)
+			line.WriteFormat("%10.2f", stat.Max)
 		case "decay":
-			line.WriteFormat("%10.2f", stat.decay)
+			line.WriteFormat("%10.2f", stat.Decay)
 		case "lastseen":
-			line.WriteFormat("%10s", stat.lastSeen.Format(time.Kitchen))
+			line.WriteFormat("%10s", stat.LastSeen.Format(time.Kitchen))
 		}
 		line.WriteString(" ")
 	}
-	line.WriteFormat("%s", stat.element)
+	line.WriteFormat("%s", stat.Element)
 	drawLine(y, line.String(), termbox.ColorDefault)
 	return
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/jessevdk/go-flags"
 	"github.com/nsf/termbox-go"
+	"github.com/mdom/topstat/stat"
 	"log"
 	"os"
 	"regexp"
@@ -61,17 +62,17 @@ func main() {
 		sortOrder = opts.SortOrder
 	}
 
-	statmap := &StatMap{
-		stats:       make(map[string]Stat),
-		sortOrder:   sortOrder,
-		purgeMethod: opts.Purge,
-		maxLen:      opts.Keep,
-		tier:        y - 2,
-		dirty:       make(map[string]bool),
-		rateUnit:    opts.RateUnit,
+	statmap := &stat.StatMap{
+		Stats:       make(map[string]stat.Stat),
+		SortOrder:   sortOrder,
+		PurgeMethod: opts.Purge,
+		MaxLen:      opts.Keep,
+		Tier:        y - 2,
+		Dirty:       make(map[string]bool),
+		RateUnit:    opts.RateUnit,
 	}
 
-	go statmap.decay()
+	go statmap.Decay()
 
 	newLine := make(chan string)
 	keyPressed := make(chan termbox.Event)
@@ -84,8 +85,8 @@ loop:
 	for {
 		select {
 		case <-tick:
-			statmap.purge()
-			t.updateScreen(statmap.fastsort())
+			statmap.Purge()
+			t.updateScreen(statmap.FastSort())
 		case event := <-keyPressed:
 			switch event.Type {
 			case termbox.EventKey:
@@ -111,12 +112,12 @@ loop:
 				}
 				switch event.Ch {
 				case 'l', 'a', 'd', 'r', 's', 'n', '<', '>':
-					t.updateScreen(statmap.fastsort())
+					t.updateScreen(statmap.FastSort())
 				}
 			case termbox.EventResize:
 				_, y := termbox.Size()
 				statmap.SetTier(y - 2)
-				t.updateScreen(statmap.fastsort())
+				t.updateScreen(statmap.FastSort())
 			}
 		case line, lineOk := <-newLine:
 			if lineOk {
@@ -134,7 +135,7 @@ loop:
 						}
 					}
 				}
-				statmap.updateElement(num, element)
+				statmap.UpdateElement(num, element)
 			} else {
 				newLine = nil
 				pipeOpen = false
