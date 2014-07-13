@@ -1,4 +1,4 @@
-package main
+package stat
 
 import (
 	"math"
@@ -8,27 +8,27 @@ import (
 )
 
 type Stat struct {
-	sum      float64
-	average  float64
-	min      float64
-	max      float64
-	lastSeen time.Time
-	seen     int
-	element  string
-	decay    float64
-	statmap  *StatMap
+	Sum      float64
+	Average  float64
+	Min      float64
+	Max      float64
+	LastSeen time.Time
+	Seen     int
+	Element  string
+	Decay    float64
+	Statmap  *StatMap
 }
 
 type StatMap struct {
 	sync.Mutex
-	stats       map[string]Stat
-	sortOrder   string
-	purgeMethod string
-	maxLen      int
-	tier        int
-	forceResort bool
-	dirty       map[string]bool
-	rateUnit    string
+	Stats       map[string]Stat
+	SortOrder   string
+	PurgeMethod string
+	MaxLen      int
+	Tier        int
+	ForceResort bool
+	Dirty       map[string]bool
+	RateUnit    string
 }
 
 type Stats []Stat
@@ -42,34 +42,34 @@ type ByLastSeen []Stat
 type ByDecay []Stat
 
 func (s BySum) Len() int           { return len(s) }
-func (s BySum) Less(i, j int) bool { return s[i].sum > s[j].sum }
+func (s BySum) Less(i, j int) bool { return s[i].Sum > s[j].Sum }
 func (s BySum) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func (s ByAverage) Len() int           { return len(s) }
-func (s ByAverage) Less(i, j int) bool { return s[i].average > s[j].average }
+func (s ByAverage) Less(i, j int) bool { return s[i].Average > s[j].Average }
 func (s ByAverage) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func (s BySeen) Len() int           { return len(s) }
-func (s BySeen) Less(i, j int) bool { return s[i].seen > s[j].seen }
+func (s BySeen) Less(i, j int) bool { return s[i].Seen > s[j].Seen }
 func (s BySeen) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func (s ByMax) Len() int           { return len(s) }
-func (s ByMax) Less(i, j int) bool { return s[i].max > s[j].max }
+func (s ByMax) Less(i, j int) bool { return s[i].Max > s[j].Max }
 func (s ByMax) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func (s ByMin) Len() int           { return len(s) }
-func (s ByMin) Less(i, j int) bool { return s[i].min < s[j].min }
+func (s ByMin) Less(i, j int) bool { return s[i].Min < s[j].Min }
 func (s ByMin) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func (s ByLastSeen) Len() int           { return len(s) }
-func (s ByLastSeen) Less(i, j int) bool { return s[i].lastSeen.After(s[j].lastSeen) }
+func (s ByLastSeen) Less(i, j int) bool { return s[i].LastSeen.After(s[j].LastSeen) }
 func (s ByLastSeen) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func (s ByDecay) Len() int           { return len(s) }
-func (s ByDecay) Less(i, j int) bool { return s[i].decay > s[j].decay }
+func (s ByDecay) Less(i, j int) bool { return s[i].Decay > s[j].Decay }
 func (s ByDecay) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
-func (statmap *StatMap) decay() {
+func (statmap *StatMap) Decay() {
 	c := time.Tick(1 * time.Second)
 	n := 0
 	for _ = range c {
@@ -78,9 +78,9 @@ func (statmap *StatMap) decay() {
 		}
 
 		statmap.Lock()
-		for m, stat := range statmap.stats {
-			stat.decay = (1.0/3.0 - stat.decay) / float64(n)
-			statmap.stats[m] = stat
+		for m, stat := range statmap.Stats {
+			stat.Decay = (1.0/3.0 - stat.Decay) / float64(n)
+			statmap.Stats[m] = stat
 
 		}
 		statmap.Unlock()
@@ -89,14 +89,14 @@ func (statmap *StatMap) decay() {
 }
 
 func (statmap *StatMap) SetSortOrder(sortOrder string) {
-	statmap.sortOrder = sortOrder
-	statmap.forceResort = true
+	statmap.SortOrder = sortOrder
+	statmap.ForceResort = true
 	return
 }
 
 func (statmap *StatMap) SetTier(tier int) {
-	statmap.tier = tier
-	statmap.forceResort = true
+	statmap.Tier = tier
+	statmap.ForceResort = true
 	return
 }
 
@@ -106,10 +106,10 @@ func (statmap *StatMap) sort() Stats {
 	defer statmap.Unlock()
 
 	var s Stats
-	for _, stat := range statmap.stats {
+	for _, stat := range statmap.Stats {
 		s = append(s, stat)
 	}
-	s.sort(statmap.sortOrder)
+	s.sort(statmap.SortOrder)
 	return s
 }
 
@@ -137,24 +137,24 @@ func (s Stats) sort(sortOrder string) {
 	return
 }
 
-func (statmap *StatMap) purge() (purged bool) {
-	if statmap.maxLen == -1 {
+func (statmap *StatMap) Purge() (purged bool) {
+	if statmap.MaxLen == -1 {
 		return false
 	}
 
 	var s Stats
-	for _, stat := range statmap.stats {
+	for _, stat := range statmap.Stats {
 		s = append(s, stat)
 	}
-	s.sort(statmap.purgeMethod)
+	s.sort(statmap.PurgeMethod)
 
 	statmap.Lock()
 	defer statmap.Unlock()
 
-	if len(s) > statmap.maxLen {
-		s = s[statmap.maxLen:len(s)]
+	if len(s) > statmap.MaxLen {
+		s = s[statmap.MaxLen:len(s)]
 		for _, stat := range s {
-			delete(statmap.stats, stat.element)
+			delete(statmap.Stats, stat.Element)
 		}
 		return true
 	}
@@ -162,49 +162,49 @@ func (statmap *StatMap) purge() (purged bool) {
 	return false
 }
 
-func (statmap *StatMap) fastsort() Stats {
+func (statmap *StatMap) FastSort() Stats {
 
-	n := statmap.tier
+	n := statmap.Tier
 
 	var s Stats
 
-	if statmap.forceResort {
-		statmap.dirty = make(map[string]bool)
+	if statmap.ForceResort {
+		statmap.Dirty = make(map[string]bool)
 		s = statmap.sort()
 	} else {
 		statmap.Lock()
-		for element := range statmap.dirty {
-			s = append(s, statmap.stats[element])
+		for element := range statmap.Dirty {
+			s = append(s, statmap.Stats[element])
 		}
 		statmap.Unlock()
-		s.sort(statmap.sortOrder)
+		s.sort(statmap.SortOrder)
 	}
 
 	if len(s) > n {
 		s = s[:n]
 	}
 
-	statmap.dirty = make(map[string]bool)
+	statmap.Dirty = make(map[string]bool)
 	for _, stat := range s {
-		statmap.dirty[stat.element] = true
+		statmap.Dirty[stat.Element] = true
 	}
 
 	return s
 }
 
-func (statmap *StatMap) updateElement(num float64, element string) (err error) {
+func (statmap *StatMap) UpdateElement(num float64, element string) (err error) {
 
 	statmap.Lock()
 	defer statmap.Unlock()
 
-	stat, ok := statmap.stats[element]
+	stat, ok := statmap.Stats[element]
 
 	if !ok {
 		stat = Stat{}
 	}
 
-	max := stat.max
-	min := stat.min
+	max := stat.Max
+	min := stat.Min
 	if num > max {
 		max = num
 	}
@@ -212,23 +212,23 @@ func (statmap *StatMap) updateElement(num float64, element string) (err error) {
 		min = num
 	}
 
-	statmap.stats[element] = Stat{
-		sum:      stat.sum + num,
-		average:  ((stat.average*float64(stat.seen) + num) / (float64(stat.seen) + 1)),
-		seen:     stat.seen + 1,
-		element:  element,
-		min:      min,
-		max:      max,
-		lastSeen: time.Now(),
-		decay:    stat.decay + 1,
-		statmap:  statmap,
+	statmap.Stats[element] = Stat{
+		Sum:      stat.Sum + num,
+		Average:  ((stat.Average*float64(stat.Seen) + num) / (float64(stat.Seen) + 1)),
+		Seen:     stat.Seen + 1,
+		Element:  element,
+		Min:      min,
+		Max:      max,
+		LastSeen: time.Now(),
+		Decay:    stat.Decay + 1,
+		Statmap:  statmap,
 	}
-	statmap.dirty[element] = true
+	statmap.Dirty[element] = true
 	return
 }
 
 func (s *Stat) GetRate(startTime time.Time) float64 {
-	unit := s.statmap.rateUnit
+	unit := s.Statmap.RateUnit
 	now := time.Since(startTime)
 	var d float64
 	switch unit {
@@ -239,9 +239,9 @@ func (s *Stat) GetRate(startTime time.Time) float64 {
 	case "second":
 		d = now.Seconds()
 	}
-	return float64(s.seen) / math.Ceil(d)
+	return float64(s.Seen) / math.Ceil(d)
 }
 
 func (s *Stat) GetPercentage() float64 {
-	return float64(s.seen) / float64(len(s.statmap.stats)) * 100
+	return float64(s.Seen) / float64(len(s.Statmap.Stats)) * 100
 }
