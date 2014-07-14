@@ -29,6 +29,7 @@ type StatMap struct {
 	ForceResort bool
 	Dirty       map[string]bool
 	RateUnit    string
+	lines       int
 }
 
 type Stats []Stat
@@ -223,6 +224,7 @@ func (statmap *StatMap) UpdateElement(num float64, element string) (err error) {
 		Decay:    stat.Decay + 1,
 		Statmap:  statmap,
 	}
+	statmap.lines++
 	statmap.Dirty[element] = true
 	return
 }
@@ -243,5 +245,5 @@ func (s *Stat) GetRate(startTime time.Time) float64 {
 }
 
 func (s *Stat) GetPercentage() float64 {
-	return float64(s.Seen) / float64(len(s.Statmap.Stats)) * 100
+	return float64(s.Seen) / float64(s.Statmap.lines) * 100
 }
