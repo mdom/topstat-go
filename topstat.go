@@ -96,6 +96,10 @@ loop:
 		case event := <-keyPressed:
 			switch event.Type {
 			case termbox.EventKey:
+				switch event.Key {
+				case termbox.KeyCtrlC:
+					break loop
+				}
 				switch event.Ch {
 				case 'q':
 					break loop
