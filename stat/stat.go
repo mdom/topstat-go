@@ -32,6 +32,13 @@ type StatMap struct {
 	lines       int
 }
 
+func (s *StatMap) Reset () {
+	s.Stats = make(map[string]Stat)
+	s.Dirty = make(map[string]bool)
+	s.ForceResort = true
+	s.lines = 0
+}
+
 type Stats []Stat
 
 type BySum []Stat

@@ -109,9 +109,12 @@ loop:
 					statmap.SetSortOrder("max")
 				case 'l':
 					statmap.SetSortOrder("last_seen")
+				case 'C':
+					statmap.Reset()
+					t.startTime = time.Now()
 				}
 				switch event.Ch {
-				case 'l', 'a', 'd', 'r', 's', 'n', '<', '>':
+				case 'l', 'a', 'd', 'r', 's', 'n', '<', '>', 'C':
 					t.updateScreen(statmap.FastSort())
 				}
 			case termbox.EventResize:
