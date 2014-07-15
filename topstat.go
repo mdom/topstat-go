@@ -10,6 +10,7 @@ import (
 	"github.com/mdom/topstat/stat"
 	"log"
 	"os"
+	"os/signal"
 	"regexp"
 	"strconv"
 	"strings"
@@ -81,9 +82,14 @@ func main() {
 	go readLine(bufio.NewReader(os.Stdin), newLine)
 	go readKey(keyPressed)
 
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+
 loop:
 	for {
 		select {
+		case <-interrupt:
+			break loop
 		case <-tick:
 			statmap.Purge()
 			t.updateScreen(statmap.FastSort())
