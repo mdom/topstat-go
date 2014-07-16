@@ -48,6 +48,7 @@ type ByMax []Stat
 type ByMin []Stat
 type ByLastSeen []Stat
 type ByDecay []Stat
+type ByElement []Stat
 
 func (s BySum) Len() int           { return len(s) }
 func (s BySum) Less(i, j int) bool { return s[i].Sum > s[j].Sum }
@@ -76,6 +77,10 @@ func (s ByLastSeen) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s ByDecay) Len() int           { return len(s) }
 func (s ByDecay) Less(i, j int) bool { return s[i].Decay > s[j].Decay }
 func (s ByDecay) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+
+func (s ByElement) Len() int           { return len(s) }
+func (s ByElement) Less(i, j int) bool { return s[i].Element < s[j].Element }
+func (s ByElement) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 func (statmap *StatMap) Decay() {
 	c := time.Tick(1 * time.Second)
@@ -122,6 +127,7 @@ func (statmap *StatMap) sort() Stats {
 }
 
 func (s Stats) sort(sortOrder string) {
+	sort.Sort(ByElement(s))
 	switch sortOrder {
 	case "sum":
 		sort.Stable(BySum(s))
