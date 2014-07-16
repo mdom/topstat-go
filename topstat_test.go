@@ -11,7 +11,7 @@ func TestSplitLine(t *testing.T) {
 }
 
 func testSplitLine(t *testing.T, desc string, line string, exNum float64, exEl string) {
-	el, num, err := splitLine(line)
+	num, el, err := splitLine(line)
 	if err != nil {
 		t.Error(fmt.Sprintf("%s: %s", desc, err))
 	} else if num != exNum {
