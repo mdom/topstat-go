@@ -42,10 +42,9 @@ func main() {
 	if terminal.IsTerminal(syscall.Stdin) {
 		log.Fatalln("stdin can't be connected to a terminal")
 	}
-	pipeOpen := true
 
 	t := Terminal{
-		pipeOpen:  &pipeOpen,
+		pipeOpen:  true,
 		metrics:   opts.Metrics,
 		startTime: time.Now(),
 	}
@@ -151,7 +150,7 @@ loop:
 				statmap.UpdateElement(num, element)
 			} else {
 				newLine = nil
-				pipeOpen = false
+				t.pipeOpen = false
 			}
 		}
 	}

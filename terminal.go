@@ -9,7 +9,7 @@ import (
 )
 
 type Terminal struct {
-	pipeOpen  *bool
+	pipeOpen  bool
 	metrics   []string
 	startTime time.Time
 }
@@ -100,7 +100,7 @@ func (t *Terminal) drawHeader() {
 func (t *Terminal) drawFooter(len int) {
 	_, height := termbox.Size()
 	pipeState := "open"
-	if *t.pipeOpen == false {
+	if t.pipeOpen == false {
 		pipeState = "closed"
 	}
 
