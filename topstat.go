@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/jessevdk/go-flags"
 	"github.com/mdom/topstat/stat"
+	tui "github.com/mdom/topstat/terminal"
 	"github.com/nsf/termbox-go"
 	"log"
 	"os"
@@ -43,10 +44,10 @@ func main() {
 		log.Fatalln("stdin can't be connected to a terminal")
 	}
 
-	t := Terminal{
-		pipeOpen:  true,
-		metrics:   opts.Metrics,
-		startTime: time.Now(),
+	t := tui.Terminal{
+		PipeOpen:  true,
+		Metrics:   opts.Metrics,
+		StartTime: time.Now(),
 	}
 
 	err := termbox.Init()
@@ -79,7 +80,7 @@ func main() {
 	tick := time.Tick(time.Duration(opts.Interval) * time.Second)
 
 	go readLine(bufio.NewReader(os.Stdin), newLine)
-	go readKey(keyPressed)
+	go tui.ReadKey(keyPressed)
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
@@ -91,7 +92,7 @@ loop:
 			break loop
 		case <-tick:
 			statmap.Purge()
-			t.updateScreen(statmap.FastSort())
+			t.UpdateScreen(statmap.FastSort())
 		case event := <-keyPressed:
 			switch event.Type {
 			case termbox.EventKey:
@@ -120,16 +121,16 @@ loop:
 					statmap.SetSortOrder("last_seen")
 				case 'C':
 					statmap.Reset()
-					t.startTime = time.Now()
+					t.StartTime = time.Now()
 				}
 				switch event.Ch {
 				case 'l', 'a', 'd', 'r', 's', 'n', '<', '>', 'C':
-					t.updateScreen(statmap.FastSort())
+					t.UpdateScreen(statmap.FastSort())
 				}
 			case termbox.EventResize:
 				_, y := termbox.Size()
 				statmap.SetTier(y - 2)
-				t.updateScreen(statmap.FastSort())
+				t.UpdateScreen(statmap.FastSort())
 			}
 		case line, lineOk := <-newLine:
 			if lineOk {
@@ -150,7 +151,7 @@ loop:
 				statmap.UpdateElement(num, element)
 			} else {
 				newLine = nil
-				t.pipeOpen = false
+				t.PipeOpen = false
 			}
 		}
 	}

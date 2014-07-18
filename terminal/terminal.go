@@ -1,4 +1,4 @@
-package main
+package terminal
 
 import (
 	"bytes"
@@ -9,12 +9,12 @@ import (
 )
 
 type Terminal struct {
-	pipeOpen  bool
-	metrics   []string
-	startTime time.Time
+	PipeOpen  bool
+	Metrics   []string
+	StartTime time.Time
 }
 
-func (t *Terminal) updateScreen(stats stat.Stats) {
+func (t *Terminal) UpdateScreen(stats stat.Stats) {
 
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	t.drawHeader()
@@ -52,14 +52,14 @@ func drawLine(y int, content string, bg termbox.Attribute) {
 func (t *Terminal) drawElement(y int, stat stat.Stat) {
 
 	var line MyBuffer
-	for _, metric := range t.metrics {
+	for _, metric := range t.Metrics {
 		switch metric {
 		case "sum":
 			line.WriteFormat("%10.2f", stat.Sum)
 		case "percentage":
 			line.WriteFormat("%10.2f", stat.GetPercentage())
 		case "rate":
-			line.WriteFormat("%10.2f", stat.GetRate(t.startTime))
+			line.WriteFormat("%10.2f", stat.GetRate(t.StartTime))
 		case "average":
 			line.WriteFormat("%10.2f", stat.Average)
 		case "seen":
@@ -90,7 +90,7 @@ func (b *MyBuffer) WriteFormat(format string, thing interface{}) {
 
 func (t *Terminal) drawHeader() {
 	var line MyBuffer
-	for _, metric := range t.metrics {
+	for _, metric := range t.Metrics {
 		line.WriteFormat("%10s ", metric)
 	}
 	line.WriteString("element")
@@ -100,21 +100,21 @@ func (t *Terminal) drawHeader() {
 func (t *Terminal) drawFooter(len int) {
 	_, height := termbox.Size()
 	pipeState := "open"
-	if t.pipeOpen == false {
+	if t.PipeOpen == false {
 		pipeState = "closed"
 	}
 
 	content := fmt.Sprintf(
 		"Pipe: %s | Elapsed: %s | Elements: %d",
 		pipeState,
-		time.Since(t.startTime).String(),
+		time.Since(t.StartTime).String(),
 		len,
 	)
 
 	drawLine(height-1, content, termbox.ColorDefault|termbox.AttrReverse)
 }
 
-func readKey(c chan termbox.Event) {
+func ReadKey(c chan termbox.Event) {
 	for {
 		c <- termbox.PollEvent()
 	}
