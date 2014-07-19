@@ -122,6 +122,12 @@ loop:
 				case 'C':
 					statmap.Reset()
 					t.StartTime = time.Now()
+				case 'P':
+					if t.Paused {
+						t.Paused = false
+					} else {
+						t.Paused = true
+					}
 				}
 				switch event.Ch {
 				case 'l', 'a', 'd', 'r', 's', 'n', '<', '>', 'C':

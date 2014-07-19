@@ -10,11 +10,16 @@ import (
 
 type Terminal struct {
 	PipeOpen  bool
+	Paused    bool
 	Metrics   []string
 	StartTime time.Time
 }
 
 func (t *Terminal) UpdateScreen(stats stat.Stats) {
+
+	if t.Paused {
+		return
+	}
 
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 	t.drawHeader()
