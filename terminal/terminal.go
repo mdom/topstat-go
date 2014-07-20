@@ -3,8 +3,8 @@ package terminal
 import (
 	"bytes"
 	"fmt"
-	"github.com/nsf/termbox-go"
 	"github.com/mdom/topstat/stat"
+	"github.com/nsf/termbox-go"
 	"time"
 )
 
