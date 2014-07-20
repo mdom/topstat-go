@@ -13,6 +13,7 @@ type Terminal struct {
 	Paused    bool
 	Metrics   []string
 	StartTime time.Time
+	StatMap   *stat.StatMap
 }
 
 func (t *Terminal) UpdateScreen(stats stat.Stats) {

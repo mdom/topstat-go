@@ -44,12 +44,6 @@ func main() {
 		log.Fatalln("stdin can't be connected to a terminal")
 	}
 
-	t := tui.Terminal{
-		PipeOpen:  true,
-		Metrics:   opts.Metrics,
-		StartTime: time.Now(),
-	}
-
 	err := termbox.Init()
 	if err != nil {
 		panic(err)
@@ -74,6 +68,13 @@ func main() {
 	}
 
 	go statmap.Decay()
+
+	t := tui.Terminal{
+		PipeOpen:  true,
+		Metrics:   opts.Metrics,
+		StartTime: time.Now(),
+		StatMap:   statmap,
+	}
 
 	newLine := make(chan string)
 	keyPressed := make(chan termbox.Event)
