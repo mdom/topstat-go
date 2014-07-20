@@ -16,6 +16,63 @@ type Terminal struct {
 	StatMap   *stat.StatMap
 }
 
+func (t *Terminal) Run(quit chan bool) {
+	keyPressed := make(chan termbox.Event)
+	go ReadKey(keyPressed)
+loop:
+	for {
+		select {
+		case event := <-keyPressed:
+			switch event.Type {
+			case termbox.EventKey:
+				switch event.Key {
+				case termbox.KeyCtrlC:
+					break loop
+				}
+				switch event.Ch {
+				case 'q':
+					break loop
+				case 'a':
+					t.StatMap.SetSortOrder("average")
+				case 'd':
+					t.StatMap.SetSortOrder("decay")
+				case 'r':
+					t.StatMap.SetSortOrder("seen")
+				case 's':
+					t.StatMap.SetSortOrder("sum")
+				case 'n':
+					t.StatMap.SetSortOrder("seen")
+				case '<':
+					t.StatMap.SetSortOrder("min")
+				case '>':
+					t.StatMap.SetSortOrder("max")
+				case 'l':
+					t.StatMap.SetSortOrder("last_seen")
+				case 'C':
+					t.StatMap.Reset()
+					t.StartTime = time.Now()
+				case 'P':
+					if t.Paused {
+						t.Paused = false
+					} else {
+						t.Paused = true
+					}
+				}
+				switch event.Ch {
+				case 'l', 'a', 'd', 'r', 's', 'n', '<', '>', 'C':
+					t.UpdateScreen(t.StatMap.FastSort())
+				}
+			case termbox.EventResize:
+				_, y := termbox.Size()
+				t.StatMap.SetTier(y - 2)
+				t.UpdateScreen(t.StatMap.FastSort())
+			}
+		}
+	}
+	quit <- true
+	return
+}
+
 func (t *Terminal) UpdateScreen(stats stat.Stats) {
 
 	if t.Paused {

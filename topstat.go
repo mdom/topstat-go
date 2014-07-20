@@ -77,11 +77,12 @@ func main() {
 	}
 
 	newLine := make(chan string)
-	keyPressed := make(chan termbox.Event)
 	tick := time.Tick(time.Duration(opts.Interval) * time.Second)
 
 	go readLine(bufio.NewReader(os.Stdin), newLine)
-	go tui.ReadKey(keyPressed)
+
+	quit := make(chan bool)
+	go t.Run(quit)
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
@@ -89,56 +90,13 @@ func main() {
 loop:
 	for {
 		select {
+		case <-quit:
+			break loop
 		case <-interrupt:
 			break loop
 		case <-tick:
 			statmap.Purge()
 			t.UpdateScreen(statmap.FastSort())
-		case event := <-keyPressed:
-			switch event.Type {
-			case termbox.EventKey:
-				switch event.Key {
-				case termbox.KeyCtrlC:
-					break loop
-				}
-				switch event.Ch {
-				case 'q':
-					break loop
-				case 'a':
-					statmap.SetSortOrder("average")
-				case 'd':
-					statmap.SetSortOrder("decay")
-				case 'r':
-					statmap.SetSortOrder("seen")
-				case 's':
-					statmap.SetSortOrder("sum")
-				case 'n':
-					statmap.SetSortOrder("seen")
-				case '<':
-					statmap.SetSortOrder("min")
-				case '>':
-					statmap.SetSortOrder("max")
-				case 'l':
-					statmap.SetSortOrder("last_seen")
-				case 'C':
-					statmap.Reset()
-					t.StartTime = time.Now()
-				case 'P':
-					if t.Paused {
-						t.Paused = false
-					} else {
-						t.Paused = true
-					}
-				}
-				switch event.Ch {
-				case 'l', 'a', 'd', 'r', 's', 'n', '<', '>', 'C':
-					t.UpdateScreen(statmap.FastSort())
-				}
-			case termbox.EventResize:
-				_, y := termbox.Size()
-				statmap.SetTier(y - 2)
-				t.UpdateScreen(statmap.FastSort())
-			}
 		case line, lineOk := <-newLine:
 			if lineOk {
 				var num float64
