@@ -70,10 +70,11 @@ func main() {
 	go statmap.Decay()
 
 	t := tui.Terminal{
-		PipeOpen:  true,
-		Metrics:   opts.Metrics,
-		StartTime: time.Now(),
-		StatMap:   statmap,
+		PipeOpen:       true,
+		Metrics:        opts.Metrics,
+		StartTime:      time.Now(),
+		StatMap:        statmap,
+		UpdateInterval: time.Duration(opts.Interval) * time.Second,
 	}
 
 	newLine := make(chan string)
@@ -96,7 +97,6 @@ loop:
 			break loop
 		case <-tick:
 			statmap.Purge()
-			t.UpdateScreen(statmap.FastSort())
 		case line, lineOk := <-newLine:
 			if lineOk {
 				var num float64

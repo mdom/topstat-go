@@ -9,19 +9,23 @@ import (
 )
 
 type Terminal struct {
-	PipeOpen  bool
-	Paused    bool
-	Metrics   []string
-	StartTime time.Time
-	StatMap   *stat.StatMap
+	PipeOpen       bool
+	Paused         bool
+	Metrics        []string
+	StartTime      time.Time
+	StatMap        *stat.StatMap
+	UpdateInterval time.Duration
 }
 
 func (t *Terminal) Run(quit chan bool) {
 	keyPressed := make(chan termbox.Event)
 	go ReadKey(keyPressed)
+	tick := time.Tick(t.UpdateInterval)
 loop:
 	for {
 		select {
+		case <-tick:
+			t.UpdateScreen()
 		case event := <-keyPressed:
 			switch event.Type {
 			case termbox.EventKey:
