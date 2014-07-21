@@ -60,12 +60,12 @@ loop:
 				}
 				switch event.Ch {
 				case 'l', 'a', 'd', 'r', 's', 'n', '<', '>', 'C':
-					t.UpdateScreen(t.StatMap.FastSort())
+					t.UpdateScreen()
 				}
 			case termbox.EventResize:
 				_, y := termbox.Size()
 				t.StatMap.SetTier(y - 2)
-				t.UpdateScreen(t.StatMap.FastSort())
+				t.UpdateScreen()
 			}
 		}
 	}
@@ -73,7 +73,9 @@ loop:
 	return
 }
 
-func (t *Terminal) UpdateScreen(stats stat.Stats) {
+func (t *Terminal) UpdateScreen() {
+
+	stats := t.StatMap.FastSort()
 
 	if t.Paused {
 		return
