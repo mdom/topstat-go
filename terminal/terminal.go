@@ -21,6 +21,15 @@ func (t *Terminal) Run(quit chan bool) {
 	keyPressed := make(chan termbox.Event)
 	go ReadKey(keyPressed)
 	tick := time.Tick(t.UpdateInterval)
+	err := termbox.Init()
+	if err != nil {
+		panic(err)
+	}
+	defer termbox.Close()
+
+	_, y := termbox.Size()
+	t.StatMap.SetTier(y - 2)
+
 loop:
 	for {
 		select {

@@ -8,7 +8,6 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/mdom/topstat/stat"
 	tui "github.com/mdom/topstat/terminal"
-	"github.com/nsf/termbox-go"
 	"log"
 	"os"
 	"os/signal"
@@ -44,14 +43,6 @@ func main() {
 		log.Fatalln("stdin can't be connected to a terminal")
 	}
 
-	err := termbox.Init()
-	if err != nil {
-		panic(err)
-	}
-	defer termbox.Close()
-
-	_, y := termbox.Size()
-
 	sortOrder := opts.Metrics[0]
 	if opts.SortOrder != "" {
 		sortOrder = opts.SortOrder
@@ -62,7 +53,7 @@ func main() {
 		SortOrder:   sortOrder,
 		PurgeMethod: opts.Purge,
 		MaxLen:      opts.Keep,
-		Tier:        y - 2,
+		Tier:        10,
 		Dirty:       make(map[string]bool),
 		RateUnit:    opts.RateUnit,
 	}
@@ -101,6 +92,7 @@ loop:
 			if lineOk {
 				var num float64
 				var element string
+				var err error
 				if opts.OnlyElement {
 					num = 0
 					element = line
@@ -108,7 +100,7 @@ loop:
 					num, element, err = splitLine(line)
 					if err != nil {
 						if opts.StrictParser {
-							termbox.Close()
+							// termbox.Close()
 							log.Fatalln(err)
 						}
 					}
