@@ -8,6 +8,7 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/mdom/topstat/stat"
 	tui "github.com/mdom/topstat/terminal"
+	"github.com/mdom/topstat/stdout"
 	"log"
 	"os"
 	"os/signal"
@@ -27,6 +28,12 @@ type Options struct {
 	StrictParser bool     `short:"S" long:"strict" description:"" default:"false"`
 	RateUnit     string   `short:"R" long:"rate-unit" description:"per unit time" default:"minute"`
 	SortOrder    string   `short:"O" long:"sort-order" description:"metric to sort by (first metric)"`
+	Stdout       bool     `short:"1" long:"stdout" description:"write stats to stdout" default:"false"`
+}
+
+type Viewer interface {
+	Run(chan bool)
+	SetPipeOpen(bool)
 }
 
 func main() {
@@ -60,12 +67,24 @@ func main() {
 
 	go statmap.Decay()
 
-	t := tui.Terminal{
-		PipeOpen:       true,
-		Metrics:        opts.Metrics,
-		StartTime:      time.Now(),
-		StatMap:        statmap,
-		UpdateInterval: time.Duration(opts.Interval) * time.Second,
+	var t Viewer
+
+	if opts.Stdout {
+		t = &stdout.Terminal{
+			PipeOpen:       true,
+			Metrics:        opts.Metrics,
+			StartTime:      time.Now(),
+			StatMap:        statmap,
+			UpdateInterval: time.Duration(opts.Interval) * time.Second,
+		}
+	} else {
+		t = &tui.Terminal{
+			PipeOpen:       true,
+			Metrics:        opts.Metrics,
+			StartTime:      time.Now(),
+			StatMap:        statmap,
+			UpdateInterval: time.Duration(opts.Interval) * time.Second,
+		}
 	}
 
 	newLine := make(chan string)
@@ -108,7 +127,7 @@ loop:
 				statmap.UpdateElement(num, element)
 			} else {
 				newLine = nil
-				t.PipeOpen = false
+				t.SetPipeOpen(false)
 			}
 		}
 	}
