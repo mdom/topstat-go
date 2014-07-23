@@ -71,6 +71,12 @@ func (t *Terminal) drawElement(stat stat.Stat) {
 	return
 }
 
+func (t *Terminal) SetPipeOpen(state bool) {
+	t.PipeOpen = state
+	return
+}
+
+
 type myBuffer struct {
 	bytes.Buffer
 }

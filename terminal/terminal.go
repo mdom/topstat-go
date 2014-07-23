@@ -192,6 +192,11 @@ func (t *Terminal) drawFooter(len int) {
 	drawLine(height-1, content, termbox.ColorDefault|termbox.AttrReverse)
 }
 
+func (t *Terminal) SetPipeOpen(state bool) {
+	t.PipeOpen = state
+	return
+}
+
 func ReadKey(c chan termbox.Event) {
 	for {
 		c <- termbox.PollEvent()
