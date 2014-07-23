@@ -13,6 +13,7 @@ type Terminal struct {
 	StartTime      time.Time
 	StatMap        *stat.StatMap
 	UpdateInterval time.Duration
+	needNewline    bool
 }
 
 func (t *Terminal) Run(quit chan bool) {
@@ -27,6 +28,13 @@ func (t *Terminal) Run(quit chan bool) {
 }
 
 func (t *Terminal) UpdateScreen() {
+
+	if t.needNewline {
+		fmt.Println()
+	} else {
+		t.needNewline = true
+		
+	}
 
 	stats := t.StatMap.FastSort()
 
