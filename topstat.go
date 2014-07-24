@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"github.com/jessevdk/go-flags"
 	"github.com/mdom/topstat/stat"
-	tui "github.com/mdom/topstat/terminal"
-	"github.com/mdom/topstat/stdout"
+	"github.com/mdom/topstat/view/termbox"
+	"github.com/mdom/topstat/view/stdout"
 	"log"
 	"os"
 	"os/signal"
@@ -78,7 +78,7 @@ func main() {
 			UpdateInterval: time.Duration(opts.Interval) * time.Second,
 		}
 	} else {
-		t = &tui.Terminal{
+		t = &termbox.Terminal{
 			PipeOpen:       true,
 			Metrics:        opts.Metrics,
 			StartTime:      time.Now(),
