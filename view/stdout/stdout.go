@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type Terminal struct {
+type Viewer struct {
 	PipeOpen       bool
 	Metrics        []string
 	StartTime      time.Time
@@ -16,7 +16,7 @@ type Terminal struct {
 	needNewline    bool
 }
 
-func (t *Terminal) Run(quit chan bool) {
+func (t *Viewer) Run(quit chan bool) {
 	tick := time.Tick(t.UpdateInterval)
 	for {
 		select {
@@ -27,7 +27,7 @@ func (t *Terminal) Run(quit chan bool) {
 	return
 }
 
-func (t *Terminal) UpdateScreen() {
+func (t *Viewer) UpdateScreen() {
 
 	if t.needNewline {
 		fmt.Println()
@@ -48,7 +48,7 @@ func (t *Terminal) UpdateScreen() {
 	}
 }
 
-func (t *Terminal) drawElement(stat stat.Stat) {
+func (t *Viewer) drawElement(stat stat.Stat) {
 
 	var line myBuffer
 	for _, metric := range t.Metrics {
@@ -79,7 +79,7 @@ func (t *Terminal) drawElement(stat stat.Stat) {
 	return
 }
 
-func (t *Terminal) SetPipeOpen(state bool) {
+func (t *Viewer) SetPipeOpen(state bool) {
 	t.PipeOpen = state
 	return
 }

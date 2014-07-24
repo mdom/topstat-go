@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type Terminal struct {
+type Viewer struct {
 	PipeOpen       bool
 	Paused         bool
 	Metrics        []string
@@ -17,7 +17,7 @@ type Terminal struct {
 	UpdateInterval time.Duration
 }
 
-func (t *Terminal) Run(quit chan bool) {
+func (t *Viewer) Run(quit chan bool) {
 	keyPressed := make(chan termbox.Event)
 	go ReadKey(keyPressed)
 	tick := time.Tick(t.UpdateInterval)
@@ -86,7 +86,7 @@ loop:
 	return
 }
 
-func (t *Terminal) UpdateScreen() {
+func (t *Viewer) UpdateScreen() {
 
 	stats := t.StatMap.FastSort()
 
@@ -127,7 +127,7 @@ func drawLine(y int, content string, bg termbox.Attribute) {
 
 }
 
-func (t *Terminal) drawElement(y int, stat stat.Stat) {
+func (t *Viewer) drawElement(y int, stat stat.Stat) {
 
 	var line MyBuffer
 	for _, metric := range t.Metrics {
@@ -166,7 +166,7 @@ func (b *MyBuffer) WriteFormat(format string, thing interface{}) {
 	b.WriteString(fmt.Sprintf(format, thing))
 }
 
-func (t *Terminal) drawHeader() {
+func (t *Viewer) drawHeader() {
 	var line MyBuffer
 	for _, metric := range t.Metrics {
 		line.WriteFormat("%10s ", metric)
@@ -175,7 +175,7 @@ func (t *Terminal) drawHeader() {
 	drawLine(0, line.String(), termbox.ColorDefault|termbox.AttrReverse)
 }
 
-func (t *Terminal) drawFooter(len int) {
+func (t *Viewer) drawFooter(len int) {
 	_, height := termbox.Size()
 	pipeState := "open"
 	if t.PipeOpen == false {
@@ -192,7 +192,7 @@ func (t *Terminal) drawFooter(len int) {
 	drawLine(height-1, content, termbox.ColorDefault|termbox.AttrReverse)
 }
 
-func (t *Terminal) SetPipeOpen(state bool) {
+func (t *Viewer) SetPipeOpen(state bool) {
 	t.PipeOpen = state
 	return
 }

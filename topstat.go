@@ -70,7 +70,7 @@ func main() {
 	var t Viewer
 
 	if opts.Stdout {
-		t = &stdout.Terminal{
+		t = &stdout.Viewer{
 			PipeOpen:       true,
 			Metrics:        opts.Metrics,
 			StartTime:      time.Now(),
@@ -78,7 +78,7 @@ func main() {
 			UpdateInterval: time.Duration(opts.Interval) * time.Second,
 		}
 	} else {
-		t = &termbox.Terminal{
+		t = &termbox.Viewer{
 			PipeOpen:       true,
 			Metrics:        opts.Metrics,
 			StartTime:      time.Now(),
