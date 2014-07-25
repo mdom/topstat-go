@@ -58,13 +58,11 @@ func (t *Viewer) UpdateScreen() {
 
 	stats := t.StatMap.FastSort()
 
-	y := 10
-	for _, stat := range stats {
+	for idx, stat := range stats {
 		t.drawElement(stat)
-		if y == 0  {
+		if idx == 10  {
 			break
 		}
-		y--
 	}
 }
 
