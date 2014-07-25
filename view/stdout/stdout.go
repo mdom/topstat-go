@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/mdom/topstat/stat"
+	"github.com/mdom/topstat/view"
 	"time"
 )
 
@@ -17,17 +18,25 @@ type Viewer struct {
 	Once           bool
 }
 
-func (t *Viewer) Run(quit chan bool) {
+func (t *Viewer) Run(event chan int) {
 	tick := time.Tick(t.UpdateInterval)
 	for {
 		select {
+		case eventType := <-event:
+			switch eventType {
+			case view.Interrupt:
+				t.Once = false
+				if t.needNewline {
+					t.UpdateScreen()
+				}
+			case view.PipeClosed:
+				t.Once = false
+				t.UpdateScreen()
+				event <- view.Quit
+			}
 		case <-tick:
 			if t.PipeOpen {
 				t.UpdateScreen()
-			} else {
-				t.Once = false
-				t.UpdateScreen()
-				quit <- true
 			}
 		}
 	}

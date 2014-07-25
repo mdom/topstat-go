@@ -7,8 +7,9 @@ import (
 	"fmt"
 	"github.com/jessevdk/go-flags"
 	"github.com/mdom/topstat/stat"
-	"github.com/mdom/topstat/view/termbox"
+	"github.com/mdom/topstat/view"
 	"github.com/mdom/topstat/view/stdout"
+	"github.com/mdom/topstat/view/termbox"
 	"log"
 	"os"
 	"os/signal"
@@ -33,7 +34,7 @@ type Options struct {
 }
 
 type Viewer interface {
-	Run(chan bool)
+	Run(chan int)
 	SetPipeOpen(bool)
 }
 
@@ -94,8 +95,9 @@ func main() {
 
 	go readLine(bufio.NewReader(os.Stdin), newLine)
 
-	quit := make(chan bool)
-	go t.Run(quit)
+	event := make(chan int)
+
+	go t.Run(event)
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
@@ -103,10 +105,13 @@ func main() {
 loop:
 	for {
 		select {
-		case <-quit:
-			break loop
+		case eventType := <-event:
+			switch eventType {
+			case view.Quit:
+				break loop
+			}
 		case <-interrupt:
-			break loop
+			event <- view.Interrupt
 		case <-tick:
 			statmap.Purge()
 		case line, lineOk := <-newLine:
@@ -129,7 +134,7 @@ loop:
 				statmap.UpdateElement(num, element)
 			} else {
 				newLine = nil
-				t.SetPipeOpen(false)
+				event <- view.PipeClosed
 			}
 		}
 	}

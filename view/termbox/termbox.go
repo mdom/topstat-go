@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/mdom/topstat/stat"
+	"github.com/mdom/topstat/view"
 	"github.com/nsf/termbox-go"
 	"time"
 )
@@ -17,7 +18,7 @@ type Viewer struct {
 	UpdateInterval time.Duration
 }
 
-func (t *Viewer) Run(quit chan bool) {
+func (t *Viewer) Run(event chan int) {
 	keyPressed := make(chan termbox.Event)
 	go ReadKey(keyPressed)
 	tick := time.Tick(t.UpdateInterval)
@@ -35,14 +36,14 @@ loop:
 		select {
 		case <-tick:
 			t.UpdateScreen()
-		case event := <-keyPressed:
-			switch event.Type {
+		case termboxEvent := <-keyPressed:
+			switch termboxEvent.Type {
 			case termbox.EventKey:
-				switch event.Key {
+				switch termboxEvent.Key {
 				case termbox.KeyCtrlC:
 					break loop
 				}
-				switch event.Ch {
+				switch termboxEvent.Ch {
 				case 'q':
 					break loop
 				case 'a':
@@ -71,7 +72,7 @@ loop:
 						t.Paused = true
 					}
 				}
-				switch event.Ch {
+				switch termboxEvent.Ch {
 				case 'l', 'a', 'd', 'r', 's', 'n', '<', '>', 'C':
 					t.UpdateScreen()
 				}
@@ -82,7 +83,7 @@ loop:
 			}
 		}
 	}
-	quit <- true
+	event <- view.Quit
 	return
 }
 
