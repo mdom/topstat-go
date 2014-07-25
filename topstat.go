@@ -29,6 +29,7 @@ type Options struct {
 	RateUnit     string   `short:"R" long:"rate-unit" description:"per unit time" default:"minute"`
 	SortOrder    string   `short:"O" long:"sort-order" description:"metric to sort by (first metric)"`
 	Stdout       bool     `short:"1" long:"stdout" description:"write stats to stdout" default:"false"`
+	StdoutOnce   bool     `long:"stdout-once" description:"just print stats once after pipe closed" default:"false"`
 }
 
 type Viewer interface {
@@ -76,6 +77,7 @@ func main() {
 			StartTime:      time.Now(),
 			StatMap:        statmap,
 			UpdateInterval: time.Duration(opts.Interval) * time.Second,
+			Once:           opts.StdoutOnce,
 		}
 	} else {
 		t = &termbox.Viewer{

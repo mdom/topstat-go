@@ -14,6 +14,7 @@ type Viewer struct {
 	StatMap        *stat.StatMap
 	UpdateInterval time.Duration
 	needNewline    bool
+	Once           bool
 }
 
 func (t *Viewer) Run(quit chan bool) {
@@ -21,13 +22,23 @@ func (t *Viewer) Run(quit chan bool) {
 	for {
 		select {
 		case <-tick:
-			t.UpdateScreen()
+			if t.PipeOpen {
+				t.UpdateScreen()
+			} else {
+				t.Once = false
+				t.UpdateScreen()
+				quit <- true
+			}
 		}
 	}
 	return
 }
 
 func (t *Viewer) UpdateScreen() {
+
+	if t.Once {
+		return
+	}
 
 	if t.needNewline {
 		fmt.Println()
