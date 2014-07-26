@@ -13,13 +13,11 @@ type Viewer struct {
 	Metrics        []string
 	StartTime      time.Time
 	StatMap        *stat.StatMap
-	UpdateInterval time.Duration
 	needNewline    bool
 	Once           bool
 }
 
 func (t *Viewer) Run(event chan int) {
-	tick := time.Tick(t.UpdateInterval)
 	for {
 		select {
 		case eventType := <-event:
@@ -33,10 +31,10 @@ func (t *Viewer) Run(event chan int) {
 				t.Once = false
 				t.UpdateScreen()
 				event <- view.Quit
-			}
-		case <-tick:
-			if t.PipeOpen {
-				t.UpdateScreen()
+			case view.Tick:
+				if t.PipeOpen {
+					t.UpdateScreen()
+				}
 			}
 		}
 	}

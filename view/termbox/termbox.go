@@ -15,13 +15,11 @@ type Viewer struct {
 	Metrics        []string
 	StartTime      time.Time
 	StatMap        *stat.StatMap
-	UpdateInterval time.Duration
 }
 
 func (t *Viewer) Run(event chan int) {
 	keyPressed := make(chan termbox.Event)
 	go ReadKey(keyPressed)
-	tick := time.Tick(t.UpdateInterval)
 	err := termbox.Init()
 	if err != nil {
 		panic(err)
@@ -34,8 +32,12 @@ func (t *Viewer) Run(event chan int) {
 loop:
 	for {
 		select {
-		case <-tick:
-			t.UpdateScreen()
+		case eventType := <-event:
+                        switch eventType {
+                        case view.Tick:
+                                t.UpdateScreen()
+                        }
+
 		case termboxEvent := <-keyPressed:
 			switch termboxEvent.Type {
 			case termbox.EventKey:

@@ -73,20 +73,18 @@ func main() {
 
 	if opts.Stdout {
 		t = &stdout.Viewer{
-			PipeOpen:       true,
-			Metrics:        opts.Metrics,
-			StartTime:      time.Now(),
-			StatMap:        statmap,
-			UpdateInterval: time.Duration(opts.Interval) * time.Second,
-			Once:           opts.StdoutOnce,
+			PipeOpen:  true,
+			Metrics:   opts.Metrics,
+			StartTime: time.Now(),
+			StatMap:   statmap,
+			Once:      opts.StdoutOnce,
 		}
 	} else {
 		t = &termbox.Viewer{
-			PipeOpen:       true,
-			Metrics:        opts.Metrics,
-			StartTime:      time.Now(),
-			StatMap:        statmap,
-			UpdateInterval: time.Duration(opts.Interval) * time.Second,
+			PipeOpen:  true,
+			Metrics:   opts.Metrics,
+			StartTime: time.Now(),
+			StatMap:   statmap,
 		}
 	}
 
@@ -113,6 +111,7 @@ loop:
 		case <-interrupt:
 			event <- view.Interrupt
 		case <-tick:
+			event <- view.Tick
 			statmap.Purge()
 		case line, lineOk := <-newLine:
 			if lineOk {
