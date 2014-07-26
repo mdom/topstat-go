@@ -88,17 +88,16 @@ func main() {
 		}
 	}
 
-	newLine := make(chan string)
-	tick := time.Tick(time.Duration(opts.Interval) * time.Second)
-
-	go readLine(bufio.NewReader(os.Stdin), newLine)
-
 	event := make(chan int)
-
 	go t.Run(event)
+
+	newLine := make(chan string)
+	go readLine(bufio.NewReader(os.Stdin), newLine)
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
+
+	tick := time.Tick(time.Duration(opts.Interval) * time.Second)
 
 loop:
 	for {
